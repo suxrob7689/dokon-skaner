@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do'kon Skaner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .scanner-section {
+            margin-bottom: 25px;
+        }
+
+        #video-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 50%;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(56, 239, 125, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .scanned-code {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .scanned-code.show {
+            display: block;
+        }
+
+        .scanned-code strong {
+            color: #0ea5e9;
+            font-size: 18px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 Do'kon Skaner</h1>
+            <p>Tovarlarni tez va oson skanerlang</p>
+        </div>
+
+        <div class="content">
+            <div id="alert" class="alert"></div>
+
+            <div class="scanner-section">
+                <button id="scanBtn" class="btn btn-primary">📷 Kamerani Yoqish</button>
+                <div id="video-container">
+                    <video id="video" playsinline></video>
+                    <div class="scanner-overlay"></div>
+                </div>
+            </div>
+
+            <div id="scannedCode" class="scanned-code">
+                <p><strong id="barcodeDisplay"></strong></p>
+                <p style="margin-top: 5px; color: #64748b; font-size: 14px;">Shtrix-kod skanerlandi ✓</p>
+            </div>
+
+            <form id="salesForm">
+                <div class="form-group">
+                    <label for="barcode">📦 Shtrix-kod</label>
+                    <input type="text" id="barcode" placeholder="Yoki qo'lda kiriting..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">🔢 Soni</label>
+                    <input type="number" id="quantity" value="1" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="seller">👤 Sotuvchi</label>
+                    <input type="text" id="seller" placeholder="Ismingizni kiriting" required>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 10px; color: #667eea;">Yuborilmoqda...</p>
+                </div>
+
+                <button type="submit" class="btn btn-success">✅ Sotishni Tasdiqlash</button>
+                <button type="button" id="stopBtn" class="btn btn-danger" style="display: none;">⏹ Kamerani O'chirish</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script>
+        // ========================================
+        // MAKE.COM WEBHOOK URL - BU YERGA O'ZGARTIRING!
+        // ========================================
+        const WEBHOOK_URL = 'YOUR_MAKE_COM_WEBHOOK_URL_HERE';
+        
+        // ========================================
+        // ASOSIY KOD
+        // ========================================
+
+        const videoContainer = document.getElementById('video-container');
+        const scanBtn = document.getElementById('scanBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const barcodeInput = document.getElementById('barcode');
+        const quantityInput = document.getElementById('quantity');
+        const sellerInput = document.getElementById('seller');
+        const salesForm = document.getElementById('salesForm');
+        const scannedCode = document.getElementById('scannedCode');
+        const barcodeDisplay = document.getElementById('barcodeDisplay');
+        const loading = document.getElementById('loading');
+        const alertBox = document.getElementById('alert');
+
+        let isScanning = false;
+
+        // Kamerani yoqish
+        scanBtn.addEventListener('click', () => {
+            if (!isScanning) {
+                startScanner();
+            }
+        });
+
+        // Kamerani o'chirish
+        stopBtn.addEventListener('click', () => {
+            stopScanner();
+        });
+
+        function startScanner() {
+            videoContainer.style.display = 'block';
+            scanBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            isScanning = true;
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#video'),
+                    constraints: {
+                        facingMode: "environment"
+                    },
+                },
+                decoder: {
+                    readers: [
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_128_reader",
+                        "code_39_reader",
+                        "upc_reader",
+                        "upc_e_reader"
+                    ]
+                }
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    showAlert('Kamera ishga tushmadi! Ruxsat bering.', 'error');
+                    stopScanner();
+                    return;
+                }
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                barcodeInput.value = code;
+                barcodeDisplay.textContent = code;
+                scannedCode.classList.add('show');
+                
+                // Ovozli signal
+                playBeep();
+                
+                // Kamerani o'chirish
+                stopScanner();
+            });
+        }
+
+        function stopScanner() {
+            if (isScanning) {
+                Quagga.stop();
+                videoContainer.style.display = 'none';
+                scanBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+                isScanning = false;
+            }
+        }
+
+        function playBeep() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Formani yuborish
+        salesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const barcode = barcodeInput.value.trim();
+            const quantity = parseInt(quantityInput.value);
+            const seller = sellerInput.value.trim();
+
+            if (!barcode || !quantity || !seller) {
+                showAlert('Barcha maydonlarni to\'ldiring!', 'error');
+                return;
+            }
+
+            // Loading ko'rsatish
+            loading.classList.add('show');
+            
+            try {
+                // Make.com ga yuborish
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        barcode: barcode,
+                        quantity: quantity,
+                        seller: seller,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('✅ Muvaffaqiyatli yuborildi! Chek tayyorlanmoqda...', 'success');
+                    
+                    // Formani tozalash
+                    barcodeInput.value = '';
+                    quantityInput.value = '1';
+                    scannedCode.classList.remove('show');
+                } else {
+                    showAlert('❌ Xatolik yuz berdi! Qayta urinib ko\'ring.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('❌ Tarmoq xatosi! Internetni tekshiring.', 'error');
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type} show`;
+            
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 5000);
+        }
+
+        // Sotuvchi nomini localStorage'da saqlash
+        window.addEventListener('load', () => {
+            const savedSeller = localStorage.getItem('seller_name');
+            if (savedSeller) {
+                sellerInput.value = savedSeller;
+            }
+        });
+        
+        sellerInput.addEventListener('blur', () => {
+            localStorage.setItem('seller_name', sellerInput.value);
+        });
+    </script>
+</body>
+</html>
