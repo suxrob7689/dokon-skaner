@@ -242,7 +242,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
     <script>
-        const WEBHOOK_URL = 'YOUR_MAKE_COM_WEBHOOK_URL_HERE';
+        // MAKE.COM WEBHOOK URL
+        const WEBHOOK_URL = 'https://hook.eu2.make.com/c7h536g481g32dq9fray68d5ssd77sk1';
         
         const videoContainer = document.getElementById('video-container');
         const scanBtn = document.getElementById('scanBtn');
@@ -262,12 +263,10 @@
 
         scanBtn.addEventListener('click', async () => {
             if (!isScanning) {
-                // Avval kamera ruxsatini so'raymiz
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ 
                         video: { facingMode: "environment" } 
                     });
-                    // Agar ruxsat berilsa, stream'ni to'xtatamiz va scanner'ni ishga tushiramiz
                     stream.getTracks().forEach(track => track.stop());
                     startScanner();
                 } catch (err) {
@@ -343,7 +342,6 @@
                 if (result && result.codeResult) {
                     const code = result.codeResult.code;
                     
-                    // Xato o'qishlarni oldini olish uchun bir xil kod 3 marta topilishi kerak
                     if (!detectionCount[code]) {
                         detectionCount[code] = 0;
                     }
@@ -438,7 +436,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert('⚠️ Make.com webhook sozlanmagan! Ma\'lumot yuborilmadi.', 'warning');
+                showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring.', 'warning');
             } finally {
                 loading.classList.remove('show');
             }
@@ -450,7 +448,6 @@
             setTimeout(() => { alertBox.classList.remove('show'); }, 5000);
         }
 
-        // Sahifa yopilganda kamerani to'xtatish
         window.addEventListener('beforeunload', () => {
             if (isScanning) {
                 stopScanner();
