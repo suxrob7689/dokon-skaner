@@ -30,41 +30,17 @@
         .header p { opacity: 0.9; font-size: 14px; }
         .content { padding: 30px 20px; }
         .scanner-section { margin-bottom: 25px; }
-        #video-container {
-            position: relative;
+        #reader {
             width: 100%;
-            height: 300px;
-            background: #000;
             border-radius: 15px;
             overflow: hidden;
             display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        #video {
+        #reader.show { display: block; }
+        #reader video {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .scanner-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 50%;
-            border: 3px solid #00ff00;
-            border-radius: 10px;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
-        }
-        .scanner-status {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 15px;
         }
         .btn {
             width: 100%;
@@ -121,11 +97,13 @@
             padding: 15px;
             margin-bottom: 20px;
             display: none;
+            animation: slideIn 0.3s ease;
         }
         .scanned-code.show { display: block; }
         .scanned-code strong {
             color: #0ea5e9;
             font-size: 18px;
+            word-break: break-all;
         }
         .alert {
             padding: 15px;
@@ -152,6 +130,11 @@
             color: #92400e;
             border: 2px solid #f59e0b;
         }
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #3b82f6;
+        }
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -175,17 +158,23 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .camera-permission-info {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
+        .info-box {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
             font-size: 14px;
-            color: #92400e;
+            color: #1e40af;
         }
-        #canvas {
-            display: none;
+        .scanner-stats {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
         }
     </style>
 </head>
@@ -198,23 +187,22 @@
         <div class="content">
             <div id="alert" class="alert"></div>
 
-            <div class="camera-permission-info">
-                💡 <strong>Eslatma:</strong> Kamera ishlamaydigan bo'lsa, qo'lda shtrix-kod kiritishingiz mumkin!
+            <div class="info-box">
+                💡 <strong>Eslatma:</strong> Kamera ishlamaydigan bo'lsa, pastda qo'lda shtrix-kod kiritishingiz mumkin!
             </div>
 
             <div class="scanner-section">
                 <button id="scanBtn" class="btn btn-primary">📷 Kamerani Yoqish</button>
-                <div id="video-container">
-                    <video id="video" playsinline autoplay muted></video>
-                    <canvas id="canvas"></canvas>
-                    <div class="scanner-overlay"></div>
-                    <div class="scanner-status" id="scannerStatus">Shtrix-kodga yo'naltiring...</div>
+                <div id="reader"></div>
+                <button id="stopBtn" class="btn btn-danger" style="display: none;">⏹ Kamerani O'chirish</button>
+                <div class="scanner-stats" id="stats" style="display: none;">
+                    <span id="statsText">Skaner tayyor...</span>
                 </div>
             </div>
 
             <div id="scannedCode" class="scanned-code">
                 <p><strong id="barcodeDisplay"></strong></p>
-                <p style="margin-top: 5px; color: #64748b; font-size: 14px;">Shtrix-kod skanerlandi ✓</p>
+                <p style="margin-top: 5px; color: #64748b; font-size: 14px;">✓ Shtrix-kod skanerlandi</p>
             </div>
 
             <form id="salesForm">
@@ -239,18 +227,15 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">✅ Sotishni Tasdiqlash</button>
-                <button type="button" id="stopBtn" class="btn btn-danger" style="display: none;">⏹ Kamerani O'chirish</button>
             </form>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
         const WEBHOOK_URL = 'https://hook.eu2.make.com/c7h536g481g32dq9fray68d5ssd77sk1';
         
-        const videoContainer = document.getElementById('video-container');
-        const videoElement = document.getElementById('video');
-        const canvasElement = document.getElementById('canvas');
+        const reader = document.getElementById('reader');
         const scanBtn = document.getElementById('scanBtn');
         const stopBtn = document.getElementById('stopBtn');
         const barcodeInput = document.getElementById('barcode');
@@ -261,53 +246,15 @@
         const barcodeDisplay = document.getElementById('barcodeDisplay');
         const loading = document.getElementById('loading');
         const alertBox = document.getElementById('alert');
-        const scannerStatus = document.getElementById('scannerStatus');
+        const stats = document.getElementById('stats');
+        const statsText = document.getElementById('statsText');
 
+        let html5QrcodeScanner = null;
         let isScanning = false;
-        let currentStream = null;
-        let detectionCount = {};
 
         scanBtn.addEventListener('click', async () => {
             if (!isScanning) {
-                try {
-                    scannerStatus.textContent = "📷 Kamera ochilmoqda...";
-                    
-                    // Kamera streamini olish
-                    const stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { 
-                            facingMode: "environment",
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        } 
-                    });
-                    
-                    // Video elementga stream ni to'g'ridan-to'g'ri bog'lash
-                    videoElement.srcObject = stream;
-                    currentStream = stream;
-                    
-                    // Video ochilgandan keyin Quagga'ni boshlash
-                    videoElement.onloadedmetadata = () => {
-                        videoElement.play();
-                        setTimeout(() => {
-                            startQuagga();
-                        }, 500);
-                    };
-                    
-                    videoContainer.style.display = 'block';
-                    scanBtn.style.display = 'none';
-                    stopBtn.style.display = 'block';
-                    isScanning = true;
-                    
-                } catch (err) {
-                    console.error('Kamera xatosi:', err);
-                    if (err.name === 'NotAllowedError') {
-                        showAlert('❌ Kamera ruxsati berilmadi! Brauzer sozlamalaridan kamerani yoqing.', 'error');
-                    } else if (err.name === 'NotFoundError') {
-                        showAlert('❌ Kamera topilmadi! Qurilmangizda kamera borligini tekshiring.', 'error');
-                    } else {
-                        showAlert('❌ Kamera xatosi: ' + err.message, 'error');
-                    }
-                }
+                startScanner();
             }
         });
 
@@ -315,109 +262,88 @@
             stopScanner();
         });
 
-        function startQuagga() {
-            scannerStatus.textContent = "🔍 Skaner ishga tushmoqda...";
-            detectionCount = {};
-            
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: videoElement,
-                    constraints: {
-                        facingMode: "environment"
-                    }
+        function startScanner() {
+            reader.classList.add('show');
+            scanBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            stats.style.display = 'block';
+            isScanning = true;
+
+            statsText.textContent = '📷 Kamera ochilmoqda...';
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0,
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39
+                ]
+            };
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText, decodedResult) => {
+                    console.log(`✅ Skanerlandi: ${decodedText}`);
+                    
+                    barcodeInput.value = decodedText;
+                    barcodeDisplay.textContent = decodedText;
+                    scannedCode.classList.add('show');
+                    
+                    playBeep();
+                    showAlert('✅ Shtrix-kod skanerlandi: ' + decodedText, 'success');
+                    statsText.textContent = '✅ Topildi!';
+                    
+                    setTimeout(() => {
+                        stopScanner();
+                    }, 1500);
                 },
-                locator: {
-                    patchSize: "medium",
-                    halfSample: true
-                },
-                numOfWorkers: navigator.hardwareConcurrency || 4,
-                decoder: {
-                    readers: [
-                        "ean_reader",
-                        "ean_8_reader", 
-                        "code_128_reader",
-                        "code_39_reader",
-                        "upc_reader",
-                        "upc_e_reader"
-                    ]
-                },
-                locate: true
-            }, function(err) {
-                if (err) {
-                    console.error('Quagga xatosi:', err);
-                    scannerStatus.textContent = "⚠️ Skaner xatosi, qo'lda kiriting";
-                    showAlert('⚠️ Skaner ishga tushmadi, qo\'lda kiriting', 'warning');
-                    return;
+                (errorMessage) => {
+                    // Har bir frame'da xato chiqadi, shuni ignore qilamiz
+                    statsText.textContent = '🔍 Shtrix-kod qidirilmoqda...';
+                }
+            ).then(() => {
+                console.log("✅ Skaner ishga tushdi");
+                statsText.textContent = '✅ Tayyor! Shtrix-kodga yo\'naltiring...';
+                showAlert('📷 Kamera muvaffaqiyatli ochildi!', 'info');
+            }).catch((err) => {
+                console.error("❌ Skaner xatosi:", err);
+                
+                let errorMsg = 'Kamera ochilmadi!';
+                if (err.toString().includes('NotAllowedError')) {
+                    errorMsg = 'Kamera ruxsati berilmadi! Brauzer sozlamalaridan ruxsat bering.';
+                } else if (err.toString().includes('NotFoundError')) {
+                    errorMsg = 'Kamera topilmadi!';
+                } else if (err.toString().includes('NotReadableError')) {
+                    errorMsg = 'Kamera band! Boshqa ilovalarni yoping.';
                 }
                 
-                console.log("✅ Quagga ishga tushdi");
-                Quagga.start();
-                scannerStatus.textContent = "✅ Tayyor! Shtrix-kodga yo'naltiring...";
-            });
-
-            Quagga.onProcessed(function(result) {
-                if (result && result.boxes) {
-                    scannerStatus.textContent = "🔍 Qidiryapman...";
-                }
-            });
-
-            Quagga.onDetected(function(result) {
-                if (result && result.codeResult) {
-                    const code = result.codeResult.code;
-                    
-                    if (!detectionCount[code]) {
-                        detectionCount[code] = 0;
-                    }
-                    detectionCount[code]++;
-
-                    console.log(`Topildi: ${code} (${detectionCount[code]}/3)`);
-
-                    if (detectionCount[code] >= 3) {
-                        barcodeInput.value = code;
-                        barcodeDisplay.textContent = code;
-                        scannedCode.classList.add('show');
-                        scannerStatus.textContent = "✅ Topildi!";
-                        
-                        playBeep();
-                        showAlert('✅ Shtrix-kod skanerlandi: ' + code, 'success');
-                        
-                        setTimeout(() => {
-                            stopScanner();
-                        }, 1000);
-                    } else {
-                        scannerStatus.textContent = `🔍 Tekshiryapman... (${detectionCount[code]}/3)`;
-                    }
-                }
+                showAlert('❌ ' + errorMsg, 'error');
+                stopScanner();
             });
         }
 
         function stopScanner() {
-            if (isScanning) {
-                try {
-                    // Quagga'ni to'xtatish
-                    if (typeof Quagga !== 'undefined') {
-                        Quagga.stop();
-                    }
-                } catch (e) {
-                    console.error('Quagga stop xatosi:', e);
-                }
-                
-                // Stream'ni to'xtatish
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
-                    currentStream = null;
-                }
-                
-                // Video elementni tozalash
-                videoElement.srcObject = null;
-                
-                videoContainer.style.display = 'none';
-                scanBtn.style.display = 'block';
-                stopBtn.style.display = 'none';
-                isScanning = false;
-                detectionCount = {};
+            if (isScanning && html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    console.log("✅ Skaner to'xtatildi");
+                    html5QrcodeScanner.clear();
+                }).catch((err) => {
+                    console.error("Stop xatosi:", err);
+                }).finally(() => {
+                    reader.classList.remove('show');
+                    scanBtn.style.display = 'block';
+                    stopBtn.style.display = 'none';
+                    stats.style.display = 'none';
+                    isScanning = false;
+                });
             }
         }
 
