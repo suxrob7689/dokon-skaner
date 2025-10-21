@@ -1,244 +1,590 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Do'kon Skaner - Savat</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-    h1, h3 {
-      text-align: center;
-      color: #333;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .btn-success {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: white;
-    }
-    .btn-warning {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-    }
-    .btn-danger {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-      color: white;
-    }
-    .cart-item {
-      border: 1px solid #eee;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    #reader {
-      display: none;
-      margin-bottom: 10px;
-    }
-    .alert {
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      display: none;
-    }
-    .alert-success { background: #d1fae5; color: #065f46; }
-    .alert-error { background: #fee2e2; color: #991b1b; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do'kon Skaner - Savat</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .content { padding: 30px 20px; }
+        .scanner-section { margin-bottom: 25px; }
+        #reader {
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #reader.show { display: block; }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 18px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .cart-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        .cart-section.show { display: block; }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .cart-header h3 {
+            font-size: 18px;
+            color: #333;
+        }
+        .cart-count {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .cart-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .cart-item-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+        .cart-item-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .cart-item-barcode {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .cart-item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .quantity-display {
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .cart-total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .empty-cart-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #3b82f6;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.show { display: block; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🛒 Do'kon Skaner</h1>
-    <p style="text-align: center;">Tovarlarni skanerlang yoki qo'lda kiriting</p>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Do'kon Skaner</h1>
+            <p>Tovarlarni skanerlang va buyurtma bering</p>
+        </div>
+        <div class="content">
+            <div id="alert" class="alert"></div>
 
-    <div id="alert" class="alert"></div>
+            <div class="scanner-section">
+                <button id="scanBtn" class="btn btn-primary">📷 Tovar Skanerlash</button>
+                <div id="reader"></div>
+                <button id="stopBtn" class="btn btn-danger" style="display: none;">⏹ Kamerani O'chirish</button>
+            </div>
 
-    <button id="scanBtn" class="btn btn-primary">📷 Skanerlash</button>
-    <div id="reader"></div>
-    <button id="stopBtn" class="btn btn-danger" style="display:none;">⏹ Kamerani O'chirish</button>
+            <div class="form-group">
+                <label for="barcodeInput">📦 Yoki qo'lda kiriting:</label>
+                <input type="text" id="barcodeInput" placeholder="Shtrix-kodni kiriting..." autocomplete="off">
+            </div>
 
-    <input type="text" id="barcodeInput" placeholder="Shtrix-kod kiriting" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #ccc;" />
-    <button id="addToCartManual" class="btn btn-success">➕ Savatga Qo‘shish</button>
+            <button id="addToCartManual" class="btn btn-success">➕ Savatga Qo'shish</button>
 
-    <h3>Savat</h3>
-    <div id="cartItems"></div>
-    <p id="cartTotal">Jami: 0 ta</p>
+            <div class="cart-section" id="cartSection">
+                <div class="cart-header">
+                    <h3>🛒 Savat</h3>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+                <div id="cartItems">
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <p>Savat bo'sh</p>
+                        <p style="font-size: 14px; margin-top: 5px;">Tovar skanerlang yoki qo'lda kiriting</p>
+                    </div>
+                </div>
+                <div class="cart-total" id="cartTotal">Jami: 0 ta tovar</div>
+            </div>
 
-    <input type="text" id="customer" placeholder="👤 Mijoz ismi (ixtiyoriy)" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #ccc;" />
+            <div class="form-group">
+                <label for="customer">👤 Mijoz ismi <span class="info-badge">Ixtiyoriy</span></label>
+                <input type="text" id="customer" placeholder="Kiriting yoki bo'sh qoldiring (No'malum)" value="">
+            </div>
 
-    <button id="checkoutBtn" class="btn btn-warning" style="display:none;">✅ Buyurtmani Tugatish</button>
-    <button id="clearCartBtn" class="btn btn-danger" style="display:none;">🗑️ Savatni Tozalash</button>
-  </div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #667eea;">Yuborilmoqda...</p>
+            </div>
 
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <script>
-    const WEBHOOK_URL = 'https://hook.eu2.make.com/epgyj96o1gdqkb1u5lmapugqrq1loa52';
+            <button id="checkoutBtn" class="btn btn-warning" style="display: none;">
+                ✅ Buyurtmani Tugatish
+            </button>
+            <button id="clearCartBtn" class="btn btn-danger" style="display: none;">
+                🗑️ Savatni Tozalash
+            </button>
+        </div>
+    </div>
 
-    let cart = [];
-    let isScanning = false;
-    let scanner;
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        const WEBHOOK_URL = 'https://hook.eu2.make.com/epgyj96o1gdqkb1u5lmapugqrq1loa52';
+        
+        let cart = [];
+        let html5QrcodeScanner = null;
+        let isScanning = false;
 
-    const reader = document.getElementById("reader");
-    const scanBtn = document.getElementById("scanBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const barcodeInput = document.getElementById("barcodeInput");
-    const addToCartManual = document.getElementById("addToCartManual");
-    const cartItems = document.getElementById("cartItems");
-    const cartTotal = document.getElementById("cartTotal");
-    const checkoutBtn = document.getElementById("checkoutBtn");
-    const clearCartBtn = document.getElementById("clearCartBtn");
-    const customerInput = document.getElementById("customer");
-    const alertBox = document.getElementById("alert");
+        const reader = document.getElementById('reader');
+        const scanBtn = document.getElementById('scanBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const barcodeInput = document.getElementById('barcodeInput');
+        const addToCartManual = document.getElementById('addToCartManual');
+        const customerInput = document.getElementById('customer');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const clearCartBtn = document.getElementById('clearCartBtn');
+        const cartSection = document.getElementById('cartSection');
+        const cartItems = document.getElementById('cartItems');
+        const cartCount = document.getElementById('cartCount');
+        const cartTotal = document.getElementById('cartTotal');
+        const loading = document.getElementById('loading');
+        const alertBox = document.getElementById('alert');
 
-    scanBtn.onclick = () => {
-      reader.style.display = "block";
-      scanBtn.style.display = "none";
-      stopBtn.style.display = "block";
-      scanner = new Html5Qrcode("reader");
-      scanner.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-          formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128]
-        },
-        (decodedText) => {
-          addToCart(decodedText);
-          stopScanner();
-        },
-        () => {}
-      ).catch(err => showAlert("❌ Kamera ruxsati yo‘q!", "error"));
-    };
+        cartSection.classList.add('show');
 
-    stopBtn.onclick = () => stopScanner();
-
-    addToCartManual.onclick = () => {
-      const code = barcodeInput.value.trim();
-      if (!code) return showAlert("❌ Shtrix-kod kiriting!", "error");
-      addToCart(code);
-      barcodeInput.value = "";
-    };
-
-    function stopScanner() {
-      if (scanner) {
-        scanner.stop().then(() => {
-          scanner.clear();
-          reader.style.display = "none";
-          scanBtn.style.display = "block";
-          stopBtn.style.display = "none";
-        });
-      }
-    }
-
-    function addToCart(barcode) {
-      const existing = cart.find(i => i.barcode === barcode);
-      if (existing) {
-        existing.quantity++;
-      } else {
-        cart.push({ barcode, quantity: 1 });
-      }
-      updateCart();
-      showAlert(`✅ Qo‘shildi: ${barcode}`, "success");
-    }
-
-    function updateCart() {
-      cartItems.innerHTML = "";
-      if (cart.length === 0) {
-        cartItems.innerHTML = "<p>Savat bo‘sh</p>";
-        checkoutBtn.style.display = "none";
-        clearCartBtn.style.display = "none";
-      } else {
-        cart.forEach((item, i) => {
-          const el = document.createElement("div");
-          el.className = "cart-item";
-          el.innerHTML = `
-            <strong>${item.barcode}</strong><br/>
-            Miqdori: ${item.quantity} <br/>
-            <button onclick="removeItem(${i})">❌ O'chirish</button>
-          `;
-          cartItems.appendChild(el);
-        });
-        checkoutBtn.style.display = "block";
-        clearCartBtn.style.display = "block";
-      }
-      const total = cart.reduce((sum, i) => sum + i.quantity, 0);
-      cartTotal.textContent = `Jami: ${total} ta`;
-    }
-
-    window.removeItem = (i) => {
-      cart.splice(i, 1);
-      updateCart();
-    };
-
-    clearCartBtn.onclick = () => {
-      if (confirm("Savatni tozalashni xohlaysizmi?")) {
-        cart = [];
-        updateCart();
-        showAlert("🗑️ Savat tozalandi", "success");
-      }
-    };
-
-    checkoutBtn.onclick = async () => {
-      if (cart.length === 0) return showAlert("❌ Savat bo‘sh!", "error");
-
-      const customer = customerInput.value.trim() || "Nomalum";
-      const payload = {
-        customer,
-        items: cart,
-        timestamp: new Date().toISOString()
-      };
-
-      try {
-        const res = await fetch(WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+        scanBtn.addEventListener('click', () => {
+            if (!isScanning) startScanner();
         });
 
-        if (res.ok) {
-          showAlert("✅ Buyurtma yuborildi!", "success");
-          cart = [];
-          customerInput.value = "";
-          updateCart();
-        } else {
-          showAlert("❌ Xatolik yuz berdi!", "error");
+        stopBtn.addEventListener('click', () => {
+            stopScanner();
+        });
+
+        addToCartManual.addEventListener('click', () => {
+            const barcode = barcodeInput.value.trim();
+            if (barcode) {
+                addToCart(barcode);
+                barcodeInput.value = '';
+                barcodeInput.focus();
+            } else {
+                showAlert('❌ Shtrix-kod kiriting!', 'error');
+            }
+        });
+
+        barcodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addToCartManual.click();
+            }
+        });
+
+        checkoutBtn.addEventListener('click', () => {
+            checkout();
+        });
+
+        clearCartBtn.addEventListener('click', () => {
+            if (confirm('Savatni tozalashni xohlaysizmi?')) {
+                cart = [];
+                updateCartDisplay();
+                showAlert('🗑️ Savat tozalandi', 'info');
+            }
+        });
+
+        function startScanner() {
+            reader.classList.add('show');
+            scanBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            isScanning = true;
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0,
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39
+                ]
+            };
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    console.log(`Skanerlandi: ${decodedText}`);
+                    addToCart(decodedText);
+                    playBeep();
+                    stopScanner();
+                },
+                (errorMessage) => {
+                    // Ignore
+                }
+            ).catch((err) => {
+                console.error("Skaner xatosi:", err);
+                showAlert('❌ Kamera ochilmadi! Ruxsat bering.', 'error');
+                stopScanner();
+            });
         }
-      } catch {
-        showAlert("⚠️ Tarmoq xatosi!", "error");
-      }
-    };
 
-    function showAlert(msg, type) {
-      alertBox.textContent = msg;
-      alertBox.className = `alert alert-${type}`;
-      alertBox.style.display = "block";
-      setTimeout(() => (alertBox.style.display = "none"), 4000);
-    }
-  </script>
+        function stopScanner() {
+            if (isScanning && html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                }).catch(() => {}).finally(() => {
+                    reader.classList.remove('show');
+                    scanBtn.style.display = 'block';
+                    stopBtn.style.display = 'none';
+                    isScanning = false;
+                });
+            }
+        }
+
+        function addToCart(barcode) {
+            const existingItem = cart.find(item => item.barcode === barcode);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+                showAlert(`➕ Miqdori oshirildi!`, 'success');
+            } else {
+                cart.push({
+                    barcode: barcode,
+                    quantity: 1
+                });
+                showAlert(`✅ Savatga qo'shildi: ${barcode}`, 'success');
+            }
+            
+            updateCartDisplay();
+        }
+
+        function removeFromCart(index) {
+            const item = cart[index];
+            cart.splice(index, 1);
+            showAlert(`🗑️ O'chirildi`, 'info');
+            updateCartDisplay();
+        }
+
+        function updateQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                removeFromCart(index);
+            } else {
+                updateCartDisplay();
+            }
+        }
+
+        function updateCartDisplay() {
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <p>Savat bo'sh</p>
+                        <p style="font-size: 14px; margin-top: 5px;">Tovar skanerlang yoki qo'lda kiriting</p>
+                    </div>
+                `;
+                checkoutBtn.style.display = 'none';
+                clearCartBtn.style.display = 'none';
+            } else {
+                let html = '';
+                
+                cart.forEach((item, index) => {
+                    html += `
+                        <div class="cart-item">
+                            <div class="cart-item-header">
+                                <div class="cart-item-name">Tovar ${item.barcode.slice(-4)}</div>
+                                <button class="cart-item-remove" onclick="removeFromCart(${index})">✕</button>
+                            </div>
+                            <div class="cart-item-barcode">Barcode: ${item.barcode}</div>
+                            <div class="cart-item-details">
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                                    <span class="quantity-display">${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                cartItems.innerHTML = html;
+                checkoutBtn.style.display = 'block';
+                clearCartBtn.style.display = 'block';
+            }
+            
+            cartCount.textContent = cart.length;
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartTotal.textContent = `Jami: ${totalItems} ta tovar`;
+        }
+
+        async function checkout() {
+            if (cart.length === 0) {
+                showAlert('❌ Savat bo\'sh!', 'error');
+                return;
+            }
+
+            const customer = customerInput.value.trim() || 'No\'malum';
+            
+            loading.classList.add('show');
+            checkoutBtn.disabled = true;
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer: customer,
+                        items: cart,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('✅ Buyurtma muvaffaqiyatli yuborildi!', 'success');
+                    cart = [];
+                    customerInput.value = '';
+                    updateCartDisplay();
+                } else {
+                    showAlert('❌ Xatolik yuz berdi! Qayta urinib ko\'ring.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring.', 'error');
+            } finally {
+                loading.classList.remove('show');
+                checkoutBtn.disabled = false;
+            }
+        }
+
+        function playBeep() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.log('Ovoz chiqmadi');
+            }
+        }
+
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type} show`;
+            setTimeout(() => { alertBox.classList.remove('show'); }, 4000);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (isScanning) stopScanner();
+        });
+
+        window.removeFromCart = removeFromCart;
+        window.updateQuantity = updateQuantity;
+    </script>
 </body>
 </html>
