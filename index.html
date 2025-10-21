@@ -512,6 +512,7 @@
             cartTotal.textContent = `Jami: ${totalItems} ta tovar`;
         }
 
+        // --- YUKORIDA BERILGAN YANGILANGAN CHECKOUT FUNKSIYASI ---
         async function checkout() {
             if (cart.length === 0) {
                 showAlert('❌ Savat bo\'sh!', 'error');
@@ -529,8 +530,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         customer: customer,
-                        items: cart,
-                        timestamp: new Date().toISOString()
+                        items: cart, // Vergul bor
+                        // QO'SHILGAN QATOR:
+                        timestamp: new Date().toISOString() 
                     })
                 });
 
@@ -550,6 +552,7 @@
                 checkoutBtn.disabled = false;
             }
         }
+        // --- YANGILANGAN CHECKOUT FUNKSIYASI TUGADI ---
 
         function playBeep() {
             try {
