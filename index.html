@@ -49,27 +49,11 @@
             transition: all 0.3s;
             margin-bottom: 10px;
         }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            color: white;
-        }
-        .btn-warning {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            font-size: 18px;
-        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; font-size: 18px; }
         .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
@@ -107,10 +91,7 @@
             padding-bottom: 15px;
             border-bottom: 2px solid #e0e0e0;
         }
-        .cart-header h3 {
-            font-size: 18px;
-            color: #333;
-        }
+        .cart-header h3 { font-size: 18px; color: #333; }
         .cart-count {
             background: #667eea;
             color: white;
@@ -147,11 +128,7 @@
             font-size: 12px;
             font-weight: 600;
         }
-        .cart-item-barcode {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-        }
+        .cart-item-barcode { font-size: 12px; color: #666; margin-bottom: 8px; }
         .cart-item-details {
             display: flex;
             justify-content: space-between;
@@ -199,44 +176,19 @@
             padding: 40px 20px;
             color: #666;
         }
-        .empty-cart-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
+        .empty-cart-icon { font-size: 48px; margin-bottom: 15px; }
         .alert {
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             display: none;
         }
-        .alert.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-        .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 2px solid #10b981;
-        }
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 2px solid #ef4444;
-        }
-        .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 2px solid #3b82f6;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
+        .alert.show { display: block; animation: slideIn 0.3s ease; }
+        .alert-success { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
+        .alert-info { background: #dbeafe; color: #1e40af; border: 2px solid #3b82f6; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { display: none; text-align: center; padding: 20px; }
         .loading.show { display: block; }
         .spinner {
             border: 4px solid #f3f3f3;
@@ -247,10 +199,7 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .info-badge {
             display: inline-block;
             background: #dbeafe;
@@ -309,18 +258,14 @@
                 <p style="margin-top: 10px; color: #667eea;">Yuborilmoqda...</p>
             </div>
 
-            <button id="checkoutBtn" class="btn btn-warning" style="display: none;">
-                ✅ Buyurtmani Tugatish
-            </button>
-            <button id="clearCartBtn" class="btn btn-danger" style="display: none;">
-                🗑️ Savatni Tozalash
-            </button>
+            <button id="checkoutBtn" class="btn btn-warning" style="display: none;">✅ Buyurtmani Tugatish</button>
+            <button id="clearCartBtn" class="btn btn-danger" style="display: none;">🗑️ Savatni Tozalash</button>
         </div>
     </div>
 
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
-        const WEBHOOK_URL = 'https://hook.eu2.make.com/c7h536g481g32dq9fray68d5ssd77sk1';
+        const WEBHOOK_URL = 'https://hook.eu2.make.com/epgyj96o1gdqkb1u5lmapugqrq1loa52';
         
         let cart = [];
         let html5QrcodeScanner = null;
@@ -343,14 +288,8 @@
 
         cartSection.classList.add('show');
 
-        scanBtn.addEventListener('click', () => {
-            if (!isScanning) startScanner();
-        });
-
-        stopBtn.addEventListener('click', () => {
-            stopScanner();
-        });
-
+        scanBtn.addEventListener('click', () => { if (!isScanning) startScanner(); });
+        stopBtn.addEventListener('click', () => { stopScanner(); });
         addToCartManual.addEventListener('click', () => {
             const barcode = barcodeInput.value.trim();
             if (barcode) {
@@ -361,18 +300,8 @@
                 showAlert('❌ Shtrix-kod kiriting!', 'error');
             }
         });
-
-        barcodeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addToCartManual.click();
-            }
-        });
-
-        checkoutBtn.addEventListener('click', () => {
-            checkout();
-        });
-
+        barcodeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); addToCartManual.click(); }});
+        checkoutBtn.addEventListener('click', () => { checkout(); });
         clearCartBtn.addEventListener('click', () => {
             if (confirm('Savatni tozalashni xohlaysizmi?')) {
                 cart = [];
@@ -407,16 +336,12 @@
                 { facingMode: "environment" },
                 config,
                 (decodedText) => {
-                    console.log(`Skanerlandi: ${decodedText}`);
                     addToCart(decodedText);
                     playBeep();
                     stopScanner();
                 },
-                (errorMessage) => {
-                    // Ignore
-                }
-            ).catch((err) => {
-                console.error("Skaner xatosi:", err);
+                () => {}
+            ).catch(() => {
                 showAlert('❌ Kamera ochilmadi! Ruxsat bering.', 'error');
                 stopScanner();
             });
@@ -426,7 +351,7 @@
             if (isScanning && html5QrcodeScanner) {
                 html5QrcodeScanner.stop().then(() => {
                     html5QrcodeScanner.clear();
-                }).catch(() => {}).finally(() => {
+                }).finally(() => {
                     reader.classList.remove('show');
                     scanBtn.style.display = 'block';
                     stopBtn.style.display = 'none';
@@ -437,23 +362,17 @@
 
         function addToCart(barcode) {
             const existingItem = cart.find(item => item.barcode === barcode);
-            
             if (existingItem) {
                 existingItem.quantity++;
                 showAlert(`➕ Miqdori oshirildi!`, 'success');
             } else {
-                cart.push({
-                    barcode: barcode,
-                    quantity: 1
-                });
+                cart.push({ barcode: barcode, quantity: 1 });
                 showAlert(`✅ Savatga qo'shildi: ${barcode}`, 'success');
             }
-            
             updateCartDisplay();
         }
 
         function removeFromCart(index) {
-            const item = cart[index];
             cart.splice(index, 1);
             showAlert(`🗑️ O'chirildi`, 'info');
             updateCartDisplay();
@@ -475,13 +394,11 @@
                         <div class="empty-cart-icon">🛒</div>
                         <p>Savat bo'sh</p>
                         <p style="font-size: 14px; margin-top: 5px;">Tovar skanerlang yoki qo'lda kiriting</p>
-                    </div>
-                `;
+                    </div>`;
                 checkoutBtn.style.display = 'none';
                 clearCartBtn.style.display = 'none';
             } else {
                 let html = '';
-                
                 cart.forEach((item, index) => {
                     html += `
                         <div class="cart-item">
@@ -497,17 +414,13 @@
                                     <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
-                
                 cartItems.innerHTML = html;
                 checkoutBtn.style.display = 'block';
                 clearCartBtn.style.display = 'block';
             }
-            
             cartCount.textContent = cart.length;
-            
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartTotal.textContent = `Jami: ${totalItems} ta tovar`;
         }
@@ -515,76 +428,4 @@
         async function checkout() {
             if (cart.length === 0) {
                 showAlert('❌ Savat bo\'sh!', 'error');
-                return;
-            }
-
-            const customer = customerInput.value.trim() || 'No\'malum';
-            
-            loading.classList.add('show');
-            checkoutBtn.disabled = true;
-
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer: customer,
-                        items: cart,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-
-                if (response.ok) {
-                    showAlert('✅ Buyurtma muvaffaqiyatli yuborildi!', 'success');
-                    cart = [];
-                    customerInput.value = '';
-                    updateCartDisplay();
-                } else {
-                    showAlert('❌ Xatolik yuz berdi! Qayta urinib ko\'ring.', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring.', 'error');
-            } finally {
-                loading.classList.remove('show');
-                checkoutBtn.disabled = false;
-            }
-        }
-
-        function playBeep() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-            } catch (e) {
-                console.log('Ovoz chiqmadi');
-            }
-        }
-
-        function showAlert(message, type) {
-            alertBox.textContent = message;
-            alertBox.className = `alert alert-${type} show`;
-            setTimeout(() => { alertBox.classList.remove('show'); }, 4000);
-        }
-
-        window.addEventListener('beforeunload', () => {
-            if (isScanning) stopScanner();
-        });
-
-        window.removeFromCart = removeFromCart;
-        window.updateQuantity = updateQuantity;
-    </script>
-</body>
-</html>
+               
