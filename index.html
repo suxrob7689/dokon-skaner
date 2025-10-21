@@ -68,6 +68,7 @@
         .btn-warning {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
+            font-size: 18px;
         }
         .form-group { margin-bottom: 20px; }
         .form-group label {
@@ -146,6 +147,11 @@
             font-size: 12px;
             font-weight: 600;
         }
+        .cart-item-barcode {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
         .cart-item-details {
             display: flex;
             justify-content: space-between;
@@ -176,11 +182,6 @@
             font-weight: 600;
             min-width: 40px;
             text-align: center;
-            font-size: 16px;
-        }
-        .item-subtotal {
-            font-weight: 600;
-            color: #667eea;
             font-size: 16px;
         }
         .cart-total {
@@ -295,7 +296,7 @@
                         <p style="font-size: 14px; margin-top: 5px;">Tovar skanerlang yoki qo'lda kiriting</p>
                     </div>
                 </div>
-                <div class="cart-total" id="cartTotal">Jami: 0 so'm</div>
+                <div class="cart-total" id="cartTotal">Jami: 0 ta tovar</div>
             </div>
 
             <div class="form-group">
@@ -340,7 +341,6 @@
         const loading = document.getElementById('loading');
         const alertBox = document.getElementById('alert');
 
-        // Savat ko'rsatish
         cartSection.classList.add('show');
 
         scanBtn.addEventListener('click', () => {
@@ -436,18 +436,14 @@
         }
 
         function addToCart(barcode) {
-            // Savatda mavjudligini tekshirish
             const existingItem = cart.find(item => item.barcode === barcode);
             
             if (existingItem) {
                 existingItem.quantity++;
-                showAlert(`➕ Miqdori oshirildi: ${existingItem.name || barcode}`, 'success');
+                showAlert(`➕ Miqdori oshirildi!`, 'success');
             } else {
-                // Yangi tovar qo'shish (hozircha faqat barcode bilan)
                 cart.push({
                     barcode: barcode,
-                    name: `Tovar ${barcode.slice(-4)}`,
-                    price: 0,
                     quantity: 1
                 });
                 showAlert(`✅ Savatga qo'shildi: ${barcode}`, 'success');
@@ -459,7 +455,7 @@
         function removeFromCart(index) {
             const item = cart[index];
             cart.splice(index, 1);
-            showAlert(`🗑️ O'chirildi: ${item.name}`, 'info');
+            showAlert(`🗑️ O'chirildi`, 'info');
             updateCartDisplay();
         }
 
@@ -485,28 +481,21 @@
                 clearCartBtn.style.display = 'none';
             } else {
                 let html = '';
-                let total = 0;
                 
                 cart.forEach((item, index) => {
-                    const subtotal = item.price * item.quantity;
-                    total += subtotal;
-                    
                     html += `
                         <div class="cart-item">
                             <div class="cart-item-header">
-                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-name">Tovar ${item.barcode.slice(-4)}</div>
                                 <button class="cart-item-remove" onclick="removeFromCart(${index})">✕</button>
                             </div>
-                            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                                Barcode: ${item.barcode}
-                            </div>
+                            <div class="cart-item-barcode">Barcode: ${item.barcode}</div>
                             <div class="cart-item-details">
                                 <div class="quantity-controls">
                                     <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">−</button>
                                     <span class="quantity-display">${item.quantity}</span>
                                     <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
                                 </div>
-                                <div class="item-subtotal">${formatNumber(subtotal)} so'm</div>
                             </div>
                         </div>
                     `;
@@ -519,8 +508,8 @@
             
             cartCount.textContent = cart.length;
             
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `Jami: ${formatNumber(total)} so'm`;
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartTotal.textContent = `Jami: ${totalItems} ta tovar`;
         }
 
         async function checkout() {
@@ -541,7 +530,6 @@
                     body: JSON.stringify({
                         customer: customer,
                         items: cart,
-                        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
                         timestamp: new Date().toISOString()
                     })
                 });
@@ -561,10 +549,6 @@
                 loading.classList.remove('show');
                 checkoutBtn.disabled = false;
             }
-        }
-
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
 
         function playBeep() {
@@ -599,7 +583,6 @@
             if (isScanning) stopScanner();
         });
 
-        // Global functions for onclick
         window.removeFromCart = removeFromCart;
         window.updateQuantity = updateQuantity;
     </script>
