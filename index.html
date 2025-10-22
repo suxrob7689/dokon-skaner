@@ -368,9 +368,8 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
         // ----- ASOSIY SOZLAMALAR -----
-        const MAIN_WEBHOOK_URL = 'https://hook.eu2.make.com/epgyj96o1gdqkb1u5lmapugqrq1loa52'; // Asosiy buyurtma uchun
-        // !!!!! MUHIM: O'zingiz yaratgan "Narx API" webhook manzilini shu yerga qo'ying !!!!!
-        const API_WEBHOOK_URL = 'https://hook.eu2.make.com/j24yzqnlwpmfgn21kirqm9x9c6raaf2z'; // Narxni olish uchun (O'ZGARTIRILDI!)
+        const MAIN_WEBHOOK_URL = 'https://hook.eu2.make.com/yzim2o64ct22pl64pamgfirtc51mth3h'; // <-- YANGI ASOSIY SSENARIY URLi
+        const API_WEBHOOK_URL = 'https://hook.eu2.make.com/j24yzqnlwpmfgn21kirqm9x9c6raaf2z'; // <-- "NARX API" SSENARIYSINING URLi
         // -----------------------------
 
         let cart = []; // Savat massivi: { barcode: "...", quantity: N, name: "...", price: N }
@@ -456,15 +455,15 @@
                             Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
                             Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39
                         ],
-                        rememberLastUsedCamera: true,
-                        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+                         rememberLastUsedCamera: true, // Try to remember the back camera
+                         supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
                     };
 
                     const onScanSuccess = (decodedText, decodedResult) => {
                         console.log(`Skaner kodi: ${decodedText}`, decodedResult);
-                        stopScanner();
+                        stopScanner(); // Stop scanning after successful read
                         playBeep();
-                        findProductAndAddToCart(decodedText);
+                        findProductAndAddToCart(decodedText); // Use the new API function
                     };
 
                     const onScanFailure = (error) => { /* Ignore */ };
@@ -681,7 +680,7 @@
                     <div class="empty-cart">
                         <div class="empty-cart-icon">🛍️</div>
                         <p>Savat hozircha bo'sh</p>
-                        <p style="font-size: 13px; margin-top: 5px; color: #a0aec0;">Tovar skanerlang yoki yuqoriga kiriting</p>
+                         <p style="font-size: 13px; margin-top: 5px; color: #a0aec0;">Tovar skanerlang yoki yuqoriga kiriting</p>
                     </div>
                 `;
                 checkoutBtn.style.display = 'none';
@@ -783,7 +782,7 @@
         }
 
         // --- Yordamchi funksiyalar ---
-        function playBeep(isError = false) { // Add error sound option
+         function playBeep(isError = false) { // Add error sound option
              try {
                  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                  if (!audioContext) return; // Exit if audio context not supported
