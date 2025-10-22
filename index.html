@@ -327,9 +327,11 @@
 
             <div class="form-group">
                 <label for="barcodeInput">📦 Yoki shtrix-kodni qo'lda kiriting:</label>
-                <input type="text" id="barcodeInput" placeholder="Shtrix-kodni kiriting va Enter bosing..." autocomplete="off">
+                <input type="text" id="barcodeInput" placeholder="Shtrix-kodni kiriting..." autocomplete="off">
+                 <button id="addToCartManualBtn" class="btn btn-success" style="margin-top: 10px;">➕ Savatga Qo'shish</button>
             </div>
              <div id="apiLoading"><div class="spinner api-spinner"></div>Narx qidirilmoqda...</div>
+
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 25px 0;">
 
             <div class="cart-section" id="cartSection">
@@ -368,8 +370,8 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
         // ----- ASOSIY SOZLAMALAR -----
-        const MAIN_WEBHOOK_URL = 'https://hook.eu2.make.com/yzim2o64ct22pl64pamgfirtc51mth3h'; // <-- YANGI ASOSIY SSENARIY URLi
-        const API_WEBHOOK_URL = 'https://hook.eu2.make.com/j24yzqnlwpmfgn21kirqm9x9c6raaf2z'; // <-- "NARX API" SSENARIYSINING URLi
+        const MAIN_WEBHOOK_URL = 'https://hook.eu2.make.com/yzim2o64ct22pl64pamgfirtc51mth3h'; // Asosiy ssenariy
+        const API_WEBHOOK_URL = 'https://hook.eu2.make.com/j24yzqnlwpmfgn21kirqm9x9c6raaf2z'; // Narx API
         // -----------------------------
 
         let cart = []; // Savat massivi: { barcode: "...", quantity: N, name: "...", price: N }
@@ -382,7 +384,7 @@
         const scanBtn = document.getElementById('scanBtn');
         const stopBtn = document.getElementById('stopBtn');
         const barcodeInput = document.getElementById('barcodeInput');
-        // const addToCartManual = document.getElementById('addToCartManual'); // Removed
+        const addToCartManualBtn = document.getElementById('addToCartManualBtn'); // YANGI TUGMA
         const customerInput = document.getElementById('customer');
         const checkoutBtn = document.getElementById('checkoutBtn');
         const clearCartBtn = document.getElementById('clearCartBtn');
@@ -405,17 +407,24 @@
             stopScanner();
         });
 
+        // YANGI TUGMA uchun hodisa
+        addToCartManualBtn.addEventListener('click', () => {
+            const barcode = barcodeInput.value.trim();
+            if (barcode) {
+                findProductAndAddToCart(barcode); // Use the new API function
+                barcodeInput.value = ''; // Clear input after button click
+                // barcodeInput.focus(); // Keep focus maybe not needed
+            } else {
+                showAlert('⚠️ Shtrix-kod kiriting!', 'info');
+            }
+        });
+
+
         // Add to cart when Enter key is pressed in barcode input
         barcodeInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault(); // Prevent form submission
-                const barcode = barcodeInput.value.trim();
-                if (barcode) {
-                    findProductAndAddToCart(barcode); // Use the new API function
-                    barcodeInput.value = ''; // Clear input after Enter
-                } else {
-                    showAlert('⚠️ Shtrix-kod kiriting!', 'info');
-                }
+                 addToCartManualBtn.click(); // Simulate button click
             }
         });
 
@@ -433,416 +442,106 @@
 
         // --- Skaner funksiyalari ---
         function startScanner() {
-            // Check for camera permissions first
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then(stream => {
-                    stream.getTracks().forEach(track => track.stop()); // Stop immediately, just needed permission check
+                    stream.getTracks().forEach(track => track.stop());
 
                     reader.classList.add('show');
                     scanBtn.style.display = 'none';
                     stopBtn.style.display = 'block';
                     isScanning = true;
-                    showAlert('📷 Kamerani shtrix-kodga yo\'naltiring...', 'info'); // Initial prompt
+                    showAlert('📷 Kamerani shtrix-kodga yo\'naltiring...', 'info');
 
                     html5QrcodeScanner = new Html5Qrcode("reader");
 
-                    const config = {
-                        fps: 10,
-                        qrbox: { width: 250, height: 150 }, // More rectangular for barcodes
-                        // aspectRatio: 1.5, // Optional: Adjust if needed
-                        formatsToSupport: [
-                            Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
-                            Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
-                            Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39
-                        ],
-                         rememberLastUsedCamera: true, // Try to remember the back camera
-                         supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-                    };
-
-                    const onScanSuccess = (decodedText, decodedResult) => {
-                        console.log(`Skaner kodi: ${decodedText}`, decodedResult);
-                        stopScanner(); // Stop scanning after successful read
-                        playBeep();
-                        findProductAndAddToCart(decodedText); // Use the new API function
-                    };
-
+                    const config = { fps: 10, qrbox: { width: 250, height: 150 }, formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39 ], rememberLastUsedCamera: true, supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA] };
+                    const onScanSuccess = (decodedText, decodedResult) => { console.log(`Skaner kodi: ${decodedText}`, decodedResult); stopScanner(); playBeep(); findProductAndAddToCart(decodedText); };
                     const onScanFailure = (error) => { /* Ignore */ };
 
                     html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
-                        .catch((err) => {
-                            console.error("Kamera ishga tushmadi (start ichida):", err);
-                            showAlert('❌ Kamera ishga tushmadi. Sahifani yangilang yoki ruxsat bering.', 'error');
-                            stopScanner(); // Ensure scanner UI resets
-                        });
-
+                        .catch((err) => { console.error("Kamera ishga tushmadi (start ichida):", err); showAlert('❌ Kamera ishga tushmadi. Sahifani yangilang yoki ruxsat bering.', 'error'); stopScanner(); });
                 })
                 .catch(permErr => {
                     console.error("Kamera ruxsati xatosi:", permErr);
-                    if (permErr.name === "NotAllowedError" || permErr.name === "PermissionDeniedError") {
-                        showAlert('⛔ Kamera ruxsati berilmadi. Brauzer sozlamalaridan yoqing.', 'error');
-                    } else {
-                        showAlert('❌ Kamera topilmadi yoki xatolik. Qurilmangizni tekshiring.', 'error');
-                    }
-                    stopScanner(); // Ensure UI resets if permission denied
+                    if (permErr.name === "NotAllowedError" || permErr.name === "PermissionDeniedError") { showAlert('⛔ Kamera ruxsati berilmadi. Brauzer sozlamalaridan yoqing.', 'error'); } else { showAlert('❌ Kamera topilmadi yoki xatolik. Qurilmangizni tekshiring.', 'error'); }
+                    stopScanner();
                 });
         }
 
-
         function stopScanner() {
-             // Check if scanner object exists and is scanning
-            if (isScanning && html5QrcodeScanner && html5QrcodeScanner.getState() === Html5QrcodeScannerState.SCANNING) {
-                html5QrcodeScanner.stop()
-                    .then(() => {
-                        console.log("Skaner to'xtatildi.");
-                        html5QrcodeScanner.clear(); // Clear the scanner instance
-                        // Explicitly clear the reader div content
-                        const readerDiv = document.getElementById("reader");
-                        if(readerDiv) readerDiv.innerHTML = "";
-                     })
+             if (isScanning && html5QrcodeScanner && html5QrcodeScanner.getState() === Html5QrcodeScannerState.SCANNING) {
+                 html5QrcodeScanner.stop()
+                    .then(() => { console.log("Skaner to'xtatildi."); html5QrcodeScanner.clear(); const readerDiv = document.getElementById("reader"); if(readerDiv) readerDiv.innerHTML = ""; })
                     .catch((err) => console.error("Skanerni to'xtatishda xato:", err))
-                    .finally(() => {
-                        reader.classList.remove('show');
-                        scanBtn.style.display = 'block';
-                        stopBtn.style.display = 'none';
-                        isScanning = false;
-                     });
+                    .finally(() => { reader.classList.remove('show'); scanBtn.style.display = 'block'; stopBtn.style.display = 'none'; isScanning = false; });
             } else if (isScanning) {
-                // If isScanning is true but scanner isn't actually running (e.g., failed to start)
                 console.warn("stopScanner called but scanner was not in SCANNING state or object invalid.");
-                reader.classList.remove('show');
-                scanBtn.style.display = 'block';
-                stopBtn.style.display = 'none';
-                isScanning = false;
-                const readerDiv = document.getElementById("reader");
-                if(readerDiv) readerDiv.innerHTML = "";
+                reader.classList.remove('show'); scanBtn.style.display = 'block'; stopBtn.style.display = 'none'; isScanning = false; const readerDiv = document.getElementById("reader"); if(readerDiv) readerDiv.innerHTML = "";
             }
         }
 
-
         // --- YANGI FUNKSIYA: Narxni API orqali olish va savatga qo'shish ---
         async function findProductAndAddToCart(barcode) {
-             // Check if API URL is properly set
-             if (!API_WEBHOOK_URL || API_WEBHOOK_URL.includes('YANGI_NARX_API')) {
-                  showAlert('🛠️ Konfiguratsiya xatosi: Narx API manzili topilmadi!', 'error');
-                  console.error("API_WEBHOOK_URL sozlanmagan!");
-                  return; // Stop execution
-             }
-
-             // Abort previous request if it's still running
-             if (apiRequestController) {
-                 apiRequestController.abort();
-                 console.log("Oldingi API so'rovi bekor qilindi.");
-             }
-             apiRequestController = new AbortController();
-             const signal = apiRequestController.signal;
-
-             apiLoading.classList.add('show'); // Show API loading indicator
-             barcodeInput.disabled = true; // Disable input during API call
-             scanBtn.disabled = true; // Disable scan button too
+             if (!API_WEBHOOK_URL || API_WEBHOOK_URL.includes('YANGI_NARX_API')) { showAlert('🛠️ Konfiguratsiya xatosi: Narx API manzili topilmadi!', 'error'); console.error("API_WEBHOOK_URL sozlanmagan!"); return; }
+             if (apiRequestController) { apiRequestController.abort(); console.log("Oldingi API so'rovi bekor qilindi."); }
+             apiRequestController = new AbortController(); const signal = apiRequestController.signal;
+             apiLoading.classList.add('show'); barcodeInput.disabled = true; scanBtn.disabled = true; addToCartManualBtn.disabled = true; // Disable button too
 
              try {
                  console.log(`API ga so'rov yuborilmoqda: ${API_WEBHOOK_URL} , barcode: ${barcode}`);
-                 const response = await fetch(API_WEBHOOK_URL, {
-                     method: 'POST', // Make sure your Make webhook expects POST
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ barcode: barcode }),
-                     signal: signal // Pass the abort signal
-                 });
-
-                 // Check if the request was aborted while fetching
-                 if (signal.aborted) {
-                     console.log("Fetch bekor qilindi.");
-                     // No need to show error, likely user scanned/entered again quickly
-                     return;
-                 }
-
-                 console.log(`API javobi statusi: ${response.status}`);
-                 const responseBody = await response.text(); // Get response body for logging
-                 console.log(`API javobi: ${responseBody}`);
-
-                 if (!response.ok) {
-                     let errorMsg = `Server xatosi: ${response.status}`;
-                     if (response.status === 404) {
-                         errorMsg = `❌ Tovar bazada topilmadi (Kod: ${barcode})`;
-                     } else {
-                          try { // Try to parse error from Make.com
-                              const errorJson = JSON.parse(responseBody);
-                              errorMsg = `❌ API xatosi: ${errorJson.message || responseBody}`;
-                          } catch {
-                              errorMsg = `❌ Serverdan tushunarsiz javob (${response.status}): ${responseBody}`;
-                          }
-                     }
-                      showAlert(errorMsg, 'error');
-                      playBeep(true); // Play error sound
-                      return; // Stop processing
-                 }
-
-                 // Try parsing the JSON response
-                 let data;
-                 try {
-                      data = JSON.parse(responseBody);
-                 } catch (parseError) {
-                      console.error("JSON parse xatosi:", parseError);
-                      showAlert('❌ API dan noto\'g\'ri formatda javob keldi.', 'error');
-                      playBeep(true); // Play error sound
-                      return; // Stop processing
-                 }
-
-
-                 // Process successful response
-                 if (data.status === "success" && data.name && typeof data.price === 'number') {
-                     addToCartInternal(barcode, data.name, data.price); // Call internal add function
-                 } else if (data.status === "error") {
-                      showAlert(`❌ ${data.message || 'Noma\'lum xato'} (Kod: ${barcode})`, 'error');
-                      playBeep(true); // Play error sound
-                 } else {
-                      console.error("API javobida 'status', 'name', yoki 'price' yetishmayapti:", data);
-                      showAlert('❌ API dan kutilmagan javob formati!', 'error');
-                      playBeep(true); // Play error sound
-                 }
-
-             } catch (error) {
-                 if (error.name === 'AbortError') {
-                     console.log("API so'rovi foydalanuvchi tomonidan bekor qilindi.");
-                     // Don't show an error message if aborted by user action
-                 } else {
-                     console.error('API ga ulanishda xato:', error);
-                     showAlert('⚠️ Tarmoq xatosi yoki API javob bermadi! Internetni tekshiring.', 'error');
-                     playBeep(true); // Play error sound
-                 }
-             } finally {
-                 apiLoading.classList.remove('show'); // Hide API loader regardless of outcome
-                 barcodeInput.disabled = false; // Re-enable input
-                 scanBtn.disabled = false; // Re-enable scan button
-                 apiRequestController = null; // Reset controller
-                 barcodeInput.value = ''; // Clear input after attempt
-                 barcodeInput.focus(); // Keep focus on input for next entry
-             }
+                 const response = await fetch(API_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ barcode: barcode }), signal: signal });
+                 if (signal.aborted) { console.log("Fetch bekor qilindi."); return; }
+                 console.log(`API javobi statusi: ${response.status}`); const responseBody = await response.text(); console.log(`API javobi: ${responseBody}`);
+                 if (!response.ok) { let errorMsg = `Server xatosi: ${response.status}`; if (response.status === 404) { errorMsg = `❌ Tovar bazada topilmadi (Kod: ${barcode})`; } else { try { const errorJson = JSON.parse(responseBody); errorMsg = `❌ API xatosi: ${errorJson.message || responseBody}`; } catch { errorMsg = `❌ Serverdan tushunarsiz javob (${response.status}): ${responseBody}`; } } showAlert(errorMsg, 'error'); playBeep(true); return; }
+                 let data; try { data = JSON.parse(responseBody); } catch (parseError) { console.error("JSON parse xatosi:", parseError); showAlert('❌ API dan noto\'g\'ri formatda javob keldi.', 'error'); playBeep(true); return; }
+                 if (data.status === "success" && data.name && typeof data.price === 'number') { addToCartInternal(barcode, data.name, data.price); } else if (data.status === "error") { showAlert(`❌ ${data.message || 'Noma\'lum xato'} (Kod: ${barcode})`, 'error'); playBeep(true); } else { console.error("API javobida 'status', 'name', yoki 'price' yetishmayapti:", data); showAlert('❌ API dan kutilmagan javob formati!', 'error'); playBeep(true); }
+             } catch (error) { if (error.name === 'AbortError') { console.log("API so'rovi foydalanuvchi tomonidan bekor qilindi."); } else { console.error('API ga ulanishda xato:', error); showAlert('⚠️ Tarmoq xatosi yoki API javob bermadi! Internetni tekshiring.', 'error'); playBeep(true); }
+             } finally { apiLoading.classList.remove('show'); barcodeInput.disabled = false; scanBtn.disabled = false; addToCartManualBtn.disabled = false; // Re-enable button
+               apiRequestController = null; barcodeInput.value = ''; barcodeInput.focus(); }
         }
-
 
         // --- Savat funksiyalari (Ichki) ---
         function addToCartInternal(barcode, name, price) {
             const existingItemIndex = cart.findIndex(item => item.barcode === barcode);
-
-            if (existingItemIndex > -1) {
-                cart[existingItemIndex].quantity++;
-                showAlert(`➕ "${name}" miqdori: ${cart[existingItemIndex].quantity}`, 'success');
-            } else {
-                cart.push({ barcode: barcode, quantity: 1, name: name, price: price });
-                 showAlert(`✅ "${name}" savatga qo'shildi`, 'success');
-            }
+            if (existingItemIndex > -1) { cart[existingItemIndex].quantity++; showAlert(`➕ "${name}" miqdori: ${cart[existingItemIndex].quantity}`, 'success'); } else { cart.push({ barcode: barcode, quantity: 1, name: name, price: price }); showAlert(`✅ "${name}" savatga qo'shildi`, 'success'); }
             updateCartDisplay();
         }
 
         function removeFromCart(index) {
-            if (index >= 0 && index < cart.length) {
-                const item = cart[index];
-                cart.splice(index, 1);
-                showAlert(`🗑️ "${item.name}" savatdan o'chirildi`, 'info');
-                updateCartDisplay();
-            }
+            if (index >= 0 && index < cart.length) { const item = cart[index]; cart.splice(index, 1); showAlert(`🗑️ "${item.name}" savatdan o'chirildi`, 'info'); updateCartDisplay(); }
         }
 
         function updateQuantity(index, delta) {
-             if (index >= 0 && index < cart.length) {
-                 cart[index].quantity += delta;
-                 if (cart[index].quantity <= 0) {
-                     removeFromCart(index);
-                 } else {
-                     updateCartDisplay();
-                     // Optional: Briefly highlight the updated item
-                     const itemElement = document.getElementById(`cart-item-${index}`);
-                     if (itemElement) {
-                         itemElement.style.transition = 'none'; // Disable transition for instant effect
-                         itemElement.style.backgroundColor = '#ebf8ff'; // Highlight blue
-                         setTimeout(() => {
-                             itemElement.style.transition = 'background-color 0.5s ease'; // Re-enable
-                             itemElement.style.backgroundColor = 'white'; // Fade back
-                         }, 100);
-                     }
-                 }
-            }
+             if (index >= 0 && index < cart.length) { cart[index].quantity += delta; if (cart[index].quantity <= 0) { removeFromCart(index); } else { updateCartDisplay(); const itemElement = document.getElementById(`cart-item-${index}`); if (itemElement) { itemElement.style.transition = 'none'; itemElement.style.backgroundColor = '#ebf8ff'; setTimeout(() => { itemElement.style.transition = 'background-color 0.5s ease'; itemElement.style.backgroundColor = 'white'; }, 100); } } }
         }
 
-        function formatPrice(price) {
-            if (typeof price !== 'number') return '0';
-             return price.toLocaleString('fr-FR'); // Use French locale for space separator
-        }
+        function formatPrice(price) { if (typeof price !== 'number') return '0'; return price.toLocaleString('fr-FR'); } // Use French locale for space separator
 
-        // --- Savat ko'rinishini yangilash (Qayta yozilgan) ---
+        // --- Savat ko'rinishini yangilash ---
         function updateCartDisplay() {
-            let totalCartPrice = 0;
-            let totalCartItemCount = 0; // Total number of individual items
-
-            if (cart.length === 0) {
-                cartItems.innerHTML = `
-                    <div class="empty-cart">
-                        <div class="empty-cart-icon">🛍️</div>
-                        <p>Savat hozircha bo'sh</p>
-                         <p style="font-size: 13px; margin-top: 5px; color: #a0aec0;">Tovar skanerlang yoki yuqoriga kiriting</p>
-                    </div>
-                `;
-                checkoutBtn.style.display = 'none';
-                clearCartBtn.style.display = 'none';
-            } else {
-                let html = '';
-                cart.forEach((item, index) => {
-                    const lineTotal = item.quantity * item.price;
-                    totalCartPrice += lineTotal;
-                    totalCartItemCount += item.quantity;
-
-                    // Assign unique ID to each cart item div for potential highlighting
-                    html += `
-                        <div class="cart-item" id="cart-item-${index}">
-                           <div class="cart-item-row1">
-                                <span class="cart-item-name">${item.name || `Tovar ${item.barcode.slice(-4)}`}</span>
-                                <span class="cart-item-price">${formatPrice(item.price)} so'm</span>
-                                <button class="cart-item-remove" onclick="removeFromCart(${index})" title="O'chirish">✕</button>
-                           </div>
-                           <div class="cart-item-barcode">Kod: ${item.barcode}</div>
-                            <div class="cart-item-row2">
-                                <div class="quantity-controls">
-                                    <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">−</button>
-                                    <span class="quantity-display">${item.quantity} dona</span>
-                                    <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
-                                </div>
-                                <span class="cart-item-line-total">${formatPrice(lineTotal)} so'm</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                cartItems.innerHTML = html;
-                checkoutBtn.style.display = 'flex'; // Use flex for button icon alignment
-                clearCartBtn.style.display = 'flex';
-            }
-
-            cartCount.textContent = `${cart.length} tur (${totalCartItemCount} dona)`; // Show both types and total items
-            cartTotal.innerHTML = `Jami summa: <strong>${formatPrice(totalCartPrice)} so'm</strong>`;
+            let totalCartPrice = 0; let totalCartItemCount = 0;
+            if (cart.length === 0) { cartItems.innerHTML = `<div class="empty-cart"><div class="empty-cart-icon">🛍️</div><p>Savat hozircha bo'sh</p><p style="font-size: 13px; margin-top: 5px; color: #a0aec0;">Tovar skanerlang yoki yuqoriga kiriting</p></div>`; checkoutBtn.style.display = 'none'; clearCartBtn.style.display = 'none'; } else { let html = ''; cart.forEach((item, index) => { const lineTotal = item.quantity * item.price; totalCartPrice += lineTotal; totalCartItemCount += item.quantity; html += `<div class="cart-item" id="cart-item-${index}"><div class="cart-item-row1"><span class="cart-item-name">${item.name || `Tovar ${item.barcode.slice(-4)}`}</span><span class="cart-item-price">${formatPrice(item.price)} so'm</span><button class="cart-item-remove" onclick="removeFromCart(${index})" title="O'chirish">✕</button></div><div class="cart-item-barcode">Kod: ${item.barcode}</div><div class="cart-item-row2"><div class="quantity-controls"><button class="quantity-btn" onclick="updateQuantity(${index}, -1)">−</button><span class="quantity-display">${item.quantity} dona</span><button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button></div><span class="cart-item-line-total">${formatPrice(lineTotal)} so'm</span></div></div>`; }); cartItems.innerHTML = html; checkoutBtn.style.display = 'flex'; clearCartBtn.style.display = 'flex'; }
+            cartCount.textContent = `${cart.length} tur (${totalCartItemCount} dona)`; cartTotal.innerHTML = `Jami summa: <strong>${formatPrice(totalCartPrice)} so'm</strong>`;
         }
 
-
-        // --- Buyurtmani yuborish (o'zgarishsiz, faqat timestamp qo'shilgan) ---
+        // --- Buyurtmani yuborish ---
         async function checkout() {
-            if (cart.length === 0) {
-                showAlert('🛒 Savat bo\'sh! Buyurtma berish uchun tovar qo\'shing.', 'warning'); // Change to warning
-                return;
-            }
-
-            // Asosiy webhookga faqat barcode va quantity kerak
-            const itemsToSend = cart.map(item => ({
-                barcode: item.barcode,
-                quantity: item.quantity
-            }));
-
+            if (cart.length === 0) { showAlert('🛒 Savat bo\'sh! Buyurtma berish uchun tovar qo\'shing.', 'warning'); return; }
+            const itemsToSend = cart.map(item => ({ barcode: item.barcode, quantity: item.quantity }));
             const customer = customerInput.value.trim() || 'Noma\'lum';
-
-            loading.classList.add('show');
-            checkoutBtn.disabled = true;
-            clearCartBtn.disabled = true;
-
-            try {
-                console.log("Asosiy webhookga yuborilmoqda:", MAIN_WEBHOOK_URL);
-                console.log("Yuborilayotgan ma'lumot:", JSON.stringify({ customer: customer, items: itemsToSend, timestamp: new Date().toISOString() }));
-
-                const response = await fetch(MAIN_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer: customer,
-                        items: itemsToSend,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-
-                 console.log(`Asosiy webhook javobi statusi: ${response.status}`);
-                 const responseBody = await response.text();
-                 console.log(`Asosiy webhook javobi: ${responseBody}`);
-
-                if (response.ok && responseBody.toLowerCase() === 'accepted') { // Make.com often returns "Accepted"
-                    showAlert('✅ Buyurtma muvaffaqiyatli qabul qilindi!', 'success');
-                    cart = [];
-                    customerInput.value = '';
-                    updateCartDisplay();
-                } else {
-                     let errorMsg = `❌ Server xatosi (${response.status})! Qayta urinib ko'ring.`;
-                     if(responseBody && responseBody.toLowerCase() !== 'accepted') {
-                         errorMsg += ` Javob: ${responseBody}`;
-                     }
-                    showAlert(errorMsg, 'error');
-                }
-            } catch (error) {
-                console.error('Checkout xatosi:', error);
-                showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring va qayta urinib ko\'ring.', 'error');
-            } finally {
-                loading.classList.remove('show');
-                checkoutBtn.disabled = false;
-                clearCartBtn.disabled = false;
-            }
+            loading.classList.add('show'); checkoutBtn.disabled = true; clearCartBtn.disabled = true;
+            try { console.log("Asosiy webhookga yuborilmoqda:", MAIN_WEBHOOK_URL); console.log("Yuborilayotgan ma'lumot:", JSON.stringify({ customer: customer, items: itemsToSend, timestamp: new Date().toISOString() })); const response = await fetch(MAIN_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: customer, items: itemsToSend, timestamp: new Date().toISOString() }) }); console.log(`Asosiy webhook javobi statusi: ${response.status}`); const responseBody = await response.text(); console.log(`Asosiy webhook javobi: ${responseBody}`); if (response.ok && responseBody.toLowerCase() === 'accepted') { showAlert('✅ Buyurtma muvaffaqiyatli qabul qilindi!', 'success'); cart = []; customerInput.value = ''; updateCartDisplay(); } else { let errorMsg = `❌ Server xatosi (${response.status})! Qayta urinib ko'ring.`; if(responseBody && responseBody.toLowerCase() !== 'accepted') { errorMsg += ` Javob: ${responseBody}`; } showAlert(errorMsg, 'error'); } } catch (error) { console.error('Checkout xatosi:', error); showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring va qayta urinib ko\'ring.', 'error'); } finally { loading.classList.remove('show'); checkoutBtn.disabled = false; clearCartBtn.disabled = false; }
         }
 
         // --- Yordamchi funksiyalar ---
-         function playBeep(isError = false) { // Add error sound option
-             try {
-                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                 if (!audioContext) return; // Exit if audio context not supported
-                 const oscillator = audioContext.createOscillator();
-                 const gainNode = audioContext.createGain();
-                 oscillator.connect(gainNode);
-                 gainNode.connect(audioContext.destination);
-
-                 oscillator.frequency.value = isError ? 440 : 880; // Lower pitch for error
-                 oscillator.type = isError ? 'square' : 'sine'; // Harsher sound for error
-                 gainNode.gain.setValueAtTime(0.2, audioContext.currentTime); // Lower volume
-                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (isError ? 0.2 : 0.1)); // Longer duration for error
-
-                 oscillator.start(audioContext.currentTime);
-                 oscillator.stop(audioContext.currentTime + (isError ? 0.2 : 0.1));
-             } catch (e) { console.log('Ovoz chiqmadi', e); }
-         }
-
-        let alertTimeoutId = null; // Store timeout ID for alerts
-        function showAlert(message, type = 'info') {
-             alertBox.textContent = message;
-             alertBox.className = `alert alert-${type} show`;
-             // Clear previous timeout if exists
-             if (alertTimeoutId) clearTimeout(alertTimeoutId);
-             // Set new timeout
-             alertTimeoutId = setTimeout(() => {
-                  alertBox.classList.remove('show');
-                  alertTimeoutId = null;
-             }, 4000); // 4 seconds
-         }
-
+         function playBeep(isError = false) { try { const audioContext = new (window.AudioContext || window.webkitAudioContext)(); if (!audioContext) return; const oscillator = audioContext.createOscillator(); const gainNode = audioContext.createGain(); oscillator.connect(gainNode); gainNode.connect(audioContext.destination); oscillator.frequency.value = isError ? 440 : 880; oscillator.type = isError ? 'square' : 'sine'; gainNode.gain.setValueAtTime(0.2, audioContext.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (isError ? 0.2 : 0.1)); oscillator.start(audioContext.currentTime); oscillator.stop(audioContext.currentTime + (isError ? 0.2 : 0.1)); } catch (e) { console.log('Ovoz chiqmadi', e); } }
+        let alertTimeoutId = null; function showAlert(message, type = 'info') { alertBox.textContent = message; alertBox.className = `alert alert-${type} show`; if (alertTimeoutId) clearTimeout(alertTimeoutId); alertTimeoutId = setTimeout(() => { alertBox.classList.remove('show'); alertTimeoutId = null; }, 4000); }
 
         // --- Dastlabki sozlamalar ---
-        window.addEventListener('beforeunload', (event) => {
-            // Ask for confirmation only if cart is not empty
-            if (cart.length > 0) {
-                 event.preventDefault(); // Standard practice
-                 event.returnValue = ''; // For older browsers
-            }
-             // Ensure scanner stops if active
-            if (isScanning) {
-                stopScanner();
-            }
-        });
-
-
-        // Global funksiyalarni ochish (HTML dagi onclick uchun)
-        window.removeFromCart = removeFromCart;
-        window.updateQuantity = updateQuantity;
-
-        // Sahifa yuklanganda savatni ko'rsatish
-        updateCartDisplay();
-        console.log("Ilova yuklandi. Asosiy Webhook:", MAIN_WEBHOOK_URL);
-        console.log("Narx API Webhook:", API_WEBHOOK_URL);
-
-        // Check if API URL is set on load
-         if (!API_WEBHOOK_URL || API_WEBHOOK_URL.includes('YANGI_NARX_API')) {
-            showAlert("DIQQAT: Narx olish uchun API manzili sozlanmagan!", 'warning');
-         }
-
+        window.addEventListener('beforeunload', (event) => { if (cart.length > 0) { event.preventDefault(); event.returnValue = ''; } if (isScanning) { stopScanner(); } });
+        window.removeFromCart = removeFromCart; window.updateQuantity = updateQuantity;
+        updateCartDisplay(); console.log("Ilova yuklandi. Asosiy Webhook:", MAIN_WEBHOOK_URL); console.log("Narx API Webhook:", API_WEBHOOK_URL);
+         if (!API_WEBHOOK_URL || API_WEBHOOK_URL.includes('YANGI_NARX_API')) { showAlert("DIQQAT: Narx olish uchun API manzili sozlanmagan!", 'warning'); }
     </script>
 </body>
 </html>
