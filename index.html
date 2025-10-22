@@ -8,244 +8,280 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Lighter gradient */
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
+            color: #333; /* Default text color */
         }
         .container {
-            max-width: 500px;
+            max-width: 600px; /* Slightly wider */
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 15px; /* Softer radius */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
         }
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px 20px;
+            padding: 25px 20px;
             text-align: center;
         }
-        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .header h1 { font-size: 26px; margin-bottom: 5px; font-weight: 600; }
         .header p { opacity: 0.9; font-size: 14px; }
-        .content { padding: 30px 20px; }
-        .scanner-section { margin-bottom: 25px; }
+        .content { padding: 25px 20px; }
+        .scanner-section { margin-bottom: 20px; }
         #reader {
             width: 100%;
-            border-radius: 15px;
+            border-radius: 10px; /* Softer radius */
             overflow: hidden;
             display: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #eee; /* Light border */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         #reader.show { display: block; }
         .btn {
             width: 100%;
-            padding: 15px;
+            padding: 14px; /* Slightly smaller padding */
             border: none;
-            border-radius: 10px;
+            border-radius: 8px; /* Softer radius */
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s ease; /* Faster transition */
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Space between icon and text */
         }
         .btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            transform: none !important; /* Disable hover effect */
+            box-shadow: none !important;
+        }
+        .btn:active:not(:disabled) {
+             transform: translateY(1px); /* Click effect */
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #5a67d8; /* Solid color for primary */
             color: white;
         }
+        .btn-primary:hover:not(:disabled) { background: #4c51bf; }
         .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: #38a169; /* Solid color */
             color: white;
         }
+        .btn-success:hover:not(:disabled) { background: #2f855a; }
         .btn-danger {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            background: #e53e3e; /* Solid color */
             color: white;
         }
+        .btn-danger:hover:not(:disabled) { background: #c53030; }
         .btn-warning {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #dd6b20; /* Solid color */
             color: white;
-            font-size: 18px;
+            font-size: 17px; /* Slightly larger */
         }
-        .form-group { margin-bottom: 20px; }
+         .btn-warning:hover:not(:disabled) { background: #c05621; }
+        .form-group { margin-bottom: 15px; } /* Smaller margin */
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 6px; /* Smaller margin */
+            color: #4a5568; /* Darker gray */
             font-weight: 600;
             font-size: 14px;
         }
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 10px 14px; /* Adjusted padding */
+            border: 1px solid #cbd5e0; /* Lighter border */
+            border-radius: 8px;
             font-size: 16px;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
+            color: #2d3748; /* Darker input text */
         }
+        .form-group input::placeholder { color: #a0aec0; } /* Placeholder color */
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2); /* Softer focus ring */
         }
         .cart-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            display: none;
+            background: #edf2f7; /* Lighter gray background */
+            border-radius: 10px; /* Softer radius */
+            padding: 15px; /* Adjusted padding */
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0; /* Light border */
         }
-        .cart-section.show { display: block; }
+        /* No need for .cart-section.show, always visible now */
         .cart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px; /* Reduced padding */
+            border-bottom: 1px solid #e2e8f0; /* Lighter border */
         }
         .cart-header h3 {
             font-size: 18px;
-            color: #333;
+            color: #2d3748; /* Darker heading */
+            font-weight: 600;
         }
         .cart-count {
             background: #667eea;
             color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 4px 10px; /* Adjusted padding */
+            border-radius: 12px; /* Pill shape */
+            font-size: 13px; /* Slightly smaller */
             font-weight: 600;
         }
         .cart-item {
             background: white;
-            border-radius: 10px;
-            padding: 15px;
+            border-radius: 8px; /* Softer radius */
+            padding: 12px; /* Adjusted padding */
             margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .cart-item-header {
+            border: 1px solid #e2e8f0; /* Light border */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+            flex-direction: column; /* Stack vertically */
+            gap: 8px; /* Space between elements */
+        }
+        .cart-item-row1, .cart-item-row2 {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
         }
         .cart-item-name {
             font-weight: 600;
-            color: #333;
-            font-size: 16px;
+            color: #2d3748; /* Darker name */
+            font-size: 15px; /* Slightly smaller */
+            flex-grow: 1; /* Take available space */
+            margin-right: 10px;
+        }
+        .cart-item-price {
+            font-size: 14px;
+            color: #4a5568;
+            white-space: nowrap; /* Prevent price from wrapping */
         }
         .cart-item-remove {
-            background: #ef4444;
-            color: white;
+            background: transparent;
+            color: #e53e3e;
             border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 5px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 18px; /* Larger icon */
+            line-height: 1;
+            margin-left: 5px;
         }
+        .cart-item-remove:hover { background-color: #fed7d7; } /* Light red hover */
         .cart-item-barcode {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .cart-item-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
+            font-size: 11px; /* Smaller barcode */
+            color: #718096; /* Lighter gray */
+            margin-top: -5px; /* Adjust spacing */
         }
         .quantity-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px; /* Slightly smaller gap */
         }
         .quantity-btn {
-            background: #667eea;
-            color: white;
+            background: #e2e8f0; /* Lighter button background */
+            color: #4a5568; /* Darker icon color */
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 28px; /* Smaller buttons */
+            height: 28px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            transition: background-color 0.2s ease;
         }
+        .quantity-btn:hover:not(:disabled) { background-color: #cbd5e0; }
         .quantity-display {
             font-weight: 600;
-            min-width: 40px;
+            min-width: 30px; /* Smaller width */
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
+            color: #2d3748;
+        }
+        .cart-item-line-total {
+             font-size: 14px;
+             font-weight: 600;
+             color: #2d3748;
+             white-space: nowrap;
         }
         .cart-total {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
+            background: #e2e8f0; /* Lighter background */
+            color: #2d3748; /* Darker text */
+            padding: 12px; /* Adjusted padding */
+            border-radius: 8px;
             margin-top: 15px;
-            text-align: center;
-            font-size: 20px;
+            text-align: right; /* Align right */
+            font-size: 18px; /* Slightly smaller */
             font-weight: 600;
+            border: 1px solid #cbd5e0;
         }
+         .cart-total strong { color: #667eea; } /* Accent color for total */
         .empty-cart {
             text-align: center;
-            padding: 40px 20px;
-            color: #666;
+            padding: 30px 20px; /* Adjusted padding */
+            color: #718096; /* Lighter gray */
+            border: 2px dashed #e2e8f0; /* Dashed border */
+            border-radius: 8px;
         }
         .empty-cart-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 36px; /* Smaller icon */
+            margin-bottom: 10px;
+            opacity: 0.5;
         }
         .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 12px 15px; /* Adjusted padding */
+            border-radius: 8px;
+            margin-bottom: 15px;
             display: none;
+            font-size: 14px; /* Smaller font */
+            border-width: 1px;
+            border-style: solid;
         }
         .alert.show {
             display: block;
             animation: slideIn 0.3s ease;
         }
         .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 2px solid #10b981;
+            background-color: #f0fff4; color: #2f855a; border-color: #9ae6b4;
         }
         .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 2px solid #ef4444;
+            background-color: #fff5f5; color: #c53030; border-color: #feb2b2;
         }
         .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 2px solid #3b82f6;
+             background-color: #ebf8ff; color: #2b6cb0; border-color: #bee3f8;
+        }
+        .alert-warning {
+             background-color: #fffaf0; color: #c05621; border-color: #fbd38d;
         }
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .loading {
+        .loading { /* Checkout loader */
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
         }
         .loading.show { display: block; }
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 3px solid #e2e8f0; /* Lighter border */
+            border-top: 3px solid #667eea; /* Accent color */
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 30px; /* Smaller spinner */
+            height: 30px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 5px auto; /* Center with bottom margin */
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -253,20 +289,32 @@
         }
         .info-badge {
             display: inline-block;
-            background: #dbeafe;
-            color: #1e40af;
-            padding: 4px 10px;
+            background: #ebf4ff; /* Lighter blue */
+            color: #4299e1; /* Blue text */
+            padding: 3px 8px; /* Adjusted padding */
             border-radius: 12px;
-            font-size: 12px;
-            margin-left: 8px;
+            font-size: 11px; /* Smaller font */
+            margin-left: 6px; /* Adjusted margin */
+            font-weight: 500; /* Normal weight */
         }
+        #apiLoading { /* Specific loader for API calls */
+             display: none; /* Hidden by default */
+             text-align: center;
+             margin: 10px 0; /* Add vertical margin */
+             font-size: 14px;
+             color: #667eea;
+        }
+         #apiLoading.show { display: block; }
+         .api-spinner { /* Smaller spinner for API */
+             width: 20px; height: 20px; border-width: 2px; margin-bottom: 5px;
+         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🛒 Do'kon Skaner</h1>
-            <p>Tovarlarni skanerlang va buyurtma bering</p>
+            <p>Tovarlarni skanerlang va savatga qo'shing</p>
         </div>
         <div class="content">
             <div id="alert" class="alert"></div>
@@ -278,59 +326,64 @@
             </div>
 
             <div class="form-group">
-                <label for="barcodeInput">📦 Yoki qo'lda kiriting:</label>
-                <input type="text" id="barcodeInput" placeholder="Shtrix-kodni kiriting..." autocomplete="off">
+                <label for="barcodeInput">📦 Yoki shtrix-kodni qo'lda kiriting:</label>
+                <input type="text" id="barcodeInput" placeholder="Shtrix-kodni kiriting va Enter bosing..." autocomplete="off">
             </div>
-
-            <button id="addToCartManual" class="btn btn-success">➕ Savatga Qo'shish</button>
+             <div id="apiLoading"><div class="spinner api-spinner"></div>Narx qidirilmoqda...</div>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 25px 0;">
 
             <div class="cart-section" id="cartSection">
                 <div class="cart-header">
                     <h3>🛒 Savat</h3>
-                    <span class="cart-count" id="cartCount">0</span>
+                    <span class="cart-count" id="cartCount">0 turdagi tovar</span>
                 </div>
                 <div id="cartItems">
                     <div class="empty-cart">
-                        <div class="empty-cart-icon">🛒</div>
-                        <p>Savat bo'sh</p>
-                        <p style="font-size: 14px; margin-top: 5px;">Tovar skanerlang yoki qo'lda kiriting</p>
+                        <div class="empty-cart-icon">🛍️</div>
+                        <p>Savat hozircha bo'sh</p>
+                         <p style="font-size: 13px; margin-top: 5px; color: #a0aec0;">Tovar skanerlang yoki yuqoriga kiriting</p>
                     </div>
                 </div>
-                <div class="cart-total" id="cartTotal">Jami: 0 ta tovar</div>
+                <div class="cart-total" id="cartTotal">Jami summa: <strong>0 so'm</strong></div>
             </div>
 
             <div class="form-group">
                 <label for="customer">👤 Mijoz ismi <span class="info-badge">Ixtiyoriy</span></label>
-                <input type="text" id="customer" placeholder="Kiriting yoki bo'sh qoldiring (No'malum)" value="">
+                <input type="text" id="customer" placeholder="Kiriting yoki bo'sh qoldiring ('Noma'lum')" value="">
             </div>
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p style="margin-top: 10px; color: #667eea;">Yuborilmoqda...</p>
+            <div class="loading" id="loading"> <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #667eea;">Buyurtma yuborilmoqda...</p>
             </div>
 
             <button id="checkoutBtn" class="btn btn-warning" style="display: none;">
                 ✅ Buyurtmani Tugatish
             </button>
             <button id="clearCartBtn" class="btn btn-danger" style="display: none;">
-                🗑️ Savatni Tozalash
+                 🗑️ Savatni Tozalash
             </button>
         </div>
     </div>
 
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
-        const WEBHOOK_URL = 'https://hook.eu2.make.com/epgyj96o1gdqkb1u5lmapugqrq1loa52';
-        
-        let cart = [];
+        // ----- ASOSIY SOZLAMALAR -----
+        const MAIN_WEBHOOK_URL = 'https://hook.eu2.make.com/epgyj96o1gdqkb1u5lmapugqrq1loa52'; // Asosiy buyurtma uchun
+        // !!!!! MUHIM: O'zingiz yaratgan "Narx API" webhook manzilini shu yerga qo'ying !!!!!
+        const API_WEBHOOK_URL = 'https://hook.eu2.make.com/j24yzqnlwpmfgn21kirqm9x9c6raaf2z'; // Narxni olish uchun (O'ZGARTIRILDI!)
+        // -----------------------------
+
+        let cart = []; // Savat massivi: { barcode: "...", quantity: N, name: "...", price: N }
         let html5QrcodeScanner = null;
         let isScanning = false;
+        let apiRequestController = null; // API so'rovini bekor qilish uchun
 
+        // --- DOM elementlarini olish ---
         const reader = document.getElementById('reader');
         const scanBtn = document.getElementById('scanBtn');
         const stopBtn = document.getElementById('stopBtn');
         const barcodeInput = document.getElementById('barcodeInput');
-        const addToCartManual = document.getElementById('addToCartManual');
+        // const addToCartManual = document.getElementById('addToCartManual'); // Removed
         const customerInput = document.getElementById('customer');
         const checkoutBtn = document.getElementById('checkoutBtn');
         const clearCartBtn = document.getElementById('clearCartBtn');
@@ -338,11 +391,13 @@
         const cartItems = document.getElementById('cartItems');
         const cartCount = document.getElementById('cartCount');
         const cartTotal = document.getElementById('cartTotal');
-        const loading = document.getElementById('loading');
+        const loading = document.getElementById('loading'); // Checkout loader
+        const apiLoading = document.getElementById('apiLoading'); // API loader
         const alertBox = document.getElementById('alert');
 
-        cartSection.classList.add('show');
+        cartSection.style.display = 'block'; // Always show cart section
 
+        // --- Hodisalarni bog'lash ---
         scanBtn.addEventListener('click', () => {
             if (!isScanning) startScanner();
         });
@@ -351,21 +406,17 @@
             stopScanner();
         });
 
-        addToCartManual.addEventListener('click', () => {
-            const barcode = barcodeInput.value.trim();
-            if (barcode) {
-                addToCart(barcode);
-                barcodeInput.value = '';
-                barcodeInput.focus();
-            } else {
-                showAlert('❌ Shtrix-kod kiriting!', 'error');
-            }
-        });
-
+        // Add to cart when Enter key is pressed in barcode input
         barcodeInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
-                addToCartManual.click();
+                e.preventDefault(); // Prevent form submission
+                const barcode = barcodeInput.value.trim();
+                if (barcode) {
+                    findProductAndAddToCart(barcode); // Use the new API function
+                    barcodeInput.value = ''; // Clear input after Enter
+                } else {
+                    showAlert('⚠️ Shtrix-kod kiriting!', 'info');
+                }
             }
         });
 
@@ -374,220 +425,425 @@
         });
 
         clearCartBtn.addEventListener('click', () => {
-            if (confirm('Savatni tozalashni xohlaysizmi?')) {
+            if (confirm('Ishonchingiz komilmi? Savat tozalanadi.')) {
                 cart = [];
                 updateCartDisplay();
                 showAlert('🗑️ Savat tozalandi', 'info');
             }
         });
 
+        // --- Skaner funksiyalari ---
         function startScanner() {
-            reader.classList.add('show');
-            scanBtn.style.display = 'none';
-            stopBtn.style.display = 'block';
-            isScanning = true;
+            // Check for camera permissions first
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(stream => {
+                    stream.getTracks().forEach(track => track.stop()); // Stop immediately, just needed permission check
 
-            html5QrcodeScanner = new Html5Qrcode("reader");
+                    reader.classList.add('show');
+                    scanBtn.style.display = 'none';
+                    stopBtn.style.display = 'block';
+                    isScanning = true;
+                    showAlert('📷 Kamerani shtrix-kodga yo\'naltiring...', 'info'); // Initial prompt
 
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.EAN_13,
-                    Html5QrcodeSupportedFormats.EAN_8,
-                    Html5QrcodeSupportedFormats.UPC_A,
-                    Html5QrcodeSupportedFormats.UPC_E,
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.CODE_39
-                ]
-            };
+                    html5QrcodeScanner = new Html5Qrcode("reader");
 
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                config,
-                (decodedText) => {
-                    console.log(`Skanerlandi: ${decodedText}`);
-                    addToCart(decodedText);
-                    playBeep();
-                    stopScanner();
-                },
-                (errorMessage) => {
-                    // Ignore
-                }
-            ).catch((err) => {
-                console.error("Skaner xatosi:", err);
-                showAlert('❌ Kamera ochilmadi! Ruxsat bering.', 'error');
-                stopScanner();
-            });
+                    const config = {
+                        fps: 10,
+                        qrbox: { width: 250, height: 150 }, // More rectangular for barcodes
+                        // aspectRatio: 1.5, // Optional: Adjust if needed
+                        formatsToSupport: [
+                            Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
+                            Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
+                            Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39
+                        ],
+                        rememberLastUsedCamera: true,
+                        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+                    };
+
+                    const onScanSuccess = (decodedText, decodedResult) => {
+                        console.log(`Skaner kodi: ${decodedText}`, decodedResult);
+                        stopScanner();
+                        playBeep();
+                        findProductAndAddToCart(decodedText);
+                    };
+
+                    const onScanFailure = (error) => { /* Ignore */ };
+
+                    html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                        .catch((err) => {
+                            console.error("Kamera ishga tushmadi (start ichida):", err);
+                            showAlert('❌ Kamera ishga tushmadi. Sahifani yangilang yoki ruxsat bering.', 'error');
+                            stopScanner(); // Ensure scanner UI resets
+                        });
+
+                })
+                .catch(permErr => {
+                    console.error("Kamera ruxsati xatosi:", permErr);
+                    if (permErr.name === "NotAllowedError" || permErr.name === "PermissionDeniedError") {
+                        showAlert('⛔ Kamera ruxsati berilmadi. Brauzer sozlamalaridan yoqing.', 'error');
+                    } else {
+                        showAlert('❌ Kamera topilmadi yoki xatolik. Qurilmangizni tekshiring.', 'error');
+                    }
+                    stopScanner(); // Ensure UI resets if permission denied
+                });
         }
+
 
         function stopScanner() {
-            if (isScanning && html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    html5QrcodeScanner.clear();
-                }).catch(() => {}).finally(() => {
-                    reader.classList.remove('show');
-                    scanBtn.style.display = 'block';
-                    stopBtn.style.display = 'none';
-                    isScanning = false;
-                });
+             // Check if scanner object exists and is scanning
+            if (isScanning && html5QrcodeScanner && html5QrcodeScanner.getState() === Html5QrcodeScannerState.SCANNING) {
+                html5QrcodeScanner.stop()
+                    .then(() => {
+                        console.log("Skaner to'xtatildi.");
+                        html5QrcodeScanner.clear(); // Clear the scanner instance
+                        // Explicitly clear the reader div content
+                        const readerDiv = document.getElementById("reader");
+                        if(readerDiv) readerDiv.innerHTML = "";
+                     })
+                    .catch((err) => console.error("Skanerni to'xtatishda xato:", err))
+                    .finally(() => {
+                        reader.classList.remove('show');
+                        scanBtn.style.display = 'block';
+                        stopBtn.style.display = 'none';
+                        isScanning = false;
+                     });
+            } else if (isScanning) {
+                // If isScanning is true but scanner isn't actually running (e.g., failed to start)
+                console.warn("stopScanner called but scanner was not in SCANNING state or object invalid.");
+                reader.classList.remove('show');
+                scanBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+                isScanning = false;
+                const readerDiv = document.getElementById("reader");
+                if(readerDiv) readerDiv.innerHTML = "";
             }
         }
 
-        function addToCart(barcode) {
-            const existingItem = cart.find(item => item.barcode === barcode);
-            
-            if (existingItem) {
-                existingItem.quantity++;
-                showAlert(`➕ Miqdori oshirildi!`, 'success');
+
+        // --- YANGI FUNKSIYA: Narxni API orqali olish va savatga qo'shish ---
+        async function findProductAndAddToCart(barcode) {
+             // Check if API URL is properly set
+             if (!API_WEBHOOK_URL || API_WEBHOOK_URL.includes('YANGI_NARX_API')) {
+                  showAlert('🛠️ Konfiguratsiya xatosi: Narx API manzili topilmadi!', 'error');
+                  console.error("API_WEBHOOK_URL sozlanmagan!");
+                  return; // Stop execution
+             }
+
+             // Abort previous request if it's still running
+             if (apiRequestController) {
+                 apiRequestController.abort();
+                 console.log("Oldingi API so'rovi bekor qilindi.");
+             }
+             apiRequestController = new AbortController();
+             const signal = apiRequestController.signal;
+
+             apiLoading.classList.add('show'); // Show API loading indicator
+             barcodeInput.disabled = true; // Disable input during API call
+             scanBtn.disabled = true; // Disable scan button too
+
+             try {
+                 console.log(`API ga so'rov yuborilmoqda: ${API_WEBHOOK_URL} , barcode: ${barcode}`);
+                 const response = await fetch(API_WEBHOOK_URL, {
+                     method: 'POST', // Make sure your Make webhook expects POST
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ barcode: barcode }),
+                     signal: signal // Pass the abort signal
+                 });
+
+                 // Check if the request was aborted while fetching
+                 if (signal.aborted) {
+                     console.log("Fetch bekor qilindi.");
+                     // No need to show error, likely user scanned/entered again quickly
+                     return;
+                 }
+
+                 console.log(`API javobi statusi: ${response.status}`);
+                 const responseBody = await response.text(); // Get response body for logging
+                 console.log(`API javobi: ${responseBody}`);
+
+                 if (!response.ok) {
+                     let errorMsg = `Server xatosi: ${response.status}`;
+                     if (response.status === 404) {
+                         errorMsg = `❌ Tovar bazada topilmadi (Kod: ${barcode})`;
+                     } else {
+                          try { // Try to parse error from Make.com
+                              const errorJson = JSON.parse(responseBody);
+                              errorMsg = `❌ API xatosi: ${errorJson.message || responseBody}`;
+                          } catch {
+                              errorMsg = `❌ Serverdan tushunarsiz javob (${response.status}): ${responseBody}`;
+                          }
+                     }
+                      showAlert(errorMsg, 'error');
+                      playBeep(true); // Play error sound
+                      return; // Stop processing
+                 }
+
+                 // Try parsing the JSON response
+                 let data;
+                 try {
+                      data = JSON.parse(responseBody);
+                 } catch (parseError) {
+                      console.error("JSON parse xatosi:", parseError);
+                      showAlert('❌ API dan noto\'g\'ri formatda javob keldi.', 'error');
+                      playBeep(true); // Play error sound
+                      return; // Stop processing
+                 }
+
+
+                 // Process successful response
+                 if (data.status === "success" && data.name && typeof data.price === 'number') {
+                     addToCartInternal(barcode, data.name, data.price); // Call internal add function
+                 } else if (data.status === "error") {
+                      showAlert(`❌ ${data.message || 'Noma\'lum xato'} (Kod: ${barcode})`, 'error');
+                      playBeep(true); // Play error sound
+                 } else {
+                      console.error("API javobida 'status', 'name', yoki 'price' yetishmayapti:", data);
+                      showAlert('❌ API dan kutilmagan javob formati!', 'error');
+                      playBeep(true); // Play error sound
+                 }
+
+             } catch (error) {
+                 if (error.name === 'AbortError') {
+                     console.log("API so'rovi foydalanuvchi tomonidan bekor qilindi.");
+                     // Don't show an error message if aborted by user action
+                 } else {
+                     console.error('API ga ulanishda xato:', error);
+                     showAlert('⚠️ Tarmoq xatosi yoki API javob bermadi! Internetni tekshiring.', 'error');
+                     playBeep(true); // Play error sound
+                 }
+             } finally {
+                 apiLoading.classList.remove('show'); // Hide API loader regardless of outcome
+                 barcodeInput.disabled = false; // Re-enable input
+                 scanBtn.disabled = false; // Re-enable scan button
+                 apiRequestController = null; // Reset controller
+                 barcodeInput.value = ''; // Clear input after attempt
+                 barcodeInput.focus(); // Keep focus on input for next entry
+             }
+        }
+
+
+        // --- Savat funksiyalari (Ichki) ---
+        function addToCartInternal(barcode, name, price) {
+            const existingItemIndex = cart.findIndex(item => item.barcode === barcode);
+
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].quantity++;
+                showAlert(`➕ "${name}" miqdori: ${cart[existingItemIndex].quantity}`, 'success');
             } else {
-                cart.push({
-                    barcode: barcode,
-                    quantity: 1
-                });
-                showAlert(`✅ Savatga qo'shildi: ${barcode}`, 'success');
+                cart.push({ barcode: barcode, quantity: 1, name: name, price: price });
+                 showAlert(`✅ "${name}" savatga qo'shildi`, 'success');
             }
-            
             updateCartDisplay();
         }
 
         function removeFromCart(index) {
-            const item = cart[index];
-            cart.splice(index, 1);
-            showAlert(`🗑️ O'chirildi`, 'info');
-            updateCartDisplay();
-        }
-
-        function updateQuantity(index, delta) {
-            cart[index].quantity += delta;
-            if (cart[index].quantity <= 0) {
-                removeFromCart(index);
-            } else {
+            if (index >= 0 && index < cart.length) {
+                const item = cart[index];
+                cart.splice(index, 1);
+                showAlert(`🗑️ "${item.name}" savatdan o'chirildi`, 'info');
                 updateCartDisplay();
             }
         }
 
+        function updateQuantity(index, delta) {
+             if (index >= 0 && index < cart.length) {
+                 cart[index].quantity += delta;
+                 if (cart[index].quantity <= 0) {
+                     removeFromCart(index);
+                 } else {
+                     updateCartDisplay();
+                     // Optional: Briefly highlight the updated item
+                     const itemElement = document.getElementById(`cart-item-${index}`);
+                     if (itemElement) {
+                         itemElement.style.transition = 'none'; // Disable transition for instant effect
+                         itemElement.style.backgroundColor = '#ebf8ff'; // Highlight blue
+                         setTimeout(() => {
+                             itemElement.style.transition = 'background-color 0.5s ease'; // Re-enable
+                             itemElement.style.backgroundColor = 'white'; // Fade back
+                         }, 100);
+                     }
+                 }
+            }
+        }
+
+        function formatPrice(price) {
+            if (typeof price !== 'number') return '0';
+             return price.toLocaleString('fr-FR'); // Use French locale for space separator
+        }
+
+        // --- Savat ko'rinishini yangilash (Qayta yozilgan) ---
         function updateCartDisplay() {
+            let totalCartPrice = 0;
+            let totalCartItemCount = 0; // Total number of individual items
+
             if (cart.length === 0) {
                 cartItems.innerHTML = `
                     <div class="empty-cart">
-                        <div class="empty-cart-icon">🛒</div>
-                        <p>Savat bo'sh</p>
-                        <p style="font-size: 14px; margin-top: 5px;">Tovar skanerlang yoki qo'lda kiriting</p>
+                        <div class="empty-cart-icon">🛍️</div>
+                        <p>Savat hozircha bo'sh</p>
+                        <p style="font-size: 13px; margin-top: 5px; color: #a0aec0;">Tovar skanerlang yoki yuqoriga kiriting</p>
                     </div>
                 `;
                 checkoutBtn.style.display = 'none';
                 clearCartBtn.style.display = 'none';
             } else {
                 let html = '';
-                
                 cart.forEach((item, index) => {
+                    const lineTotal = item.quantity * item.price;
+                    totalCartPrice += lineTotal;
+                    totalCartItemCount += item.quantity;
+
+                    // Assign unique ID to each cart item div for potential highlighting
                     html += `
-                        <div class="cart-item">
-                            <div class="cart-item-header">
-                                <div class="cart-item-name">Tovar ${item.barcode.slice(-4)}</div>
-                                <button class="cart-item-remove" onclick="removeFromCart(${index})">✕</button>
-                            </div>
-                            <div class="cart-item-barcode">Barcode: ${item.barcode}</div>
-                            <div class="cart-item-details">
+                        <div class="cart-item" id="cart-item-${index}">
+                           <div class="cart-item-row1">
+                                <span class="cart-item-name">${item.name || `Tovar ${item.barcode.slice(-4)}`}</span>
+                                <span class="cart-item-price">${formatPrice(item.price)} so'm</span>
+                                <button class="cart-item-remove" onclick="removeFromCart(${index})" title="O'chirish">✕</button>
+                           </div>
+                           <div class="cart-item-barcode">Kod: ${item.barcode}</div>
+                            <div class="cart-item-row2">
                                 <div class="quantity-controls">
                                     <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">−</button>
-                                    <span class="quantity-display">${item.quantity}</span>
+                                    <span class="quantity-display">${item.quantity} dona</span>
                                     <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
                                 </div>
+                                <span class="cart-item-line-total">${formatPrice(lineTotal)} so'm</span>
                             </div>
                         </div>
                     `;
                 });
-                
                 cartItems.innerHTML = html;
-                checkoutBtn.style.display = 'block';
-                clearCartBtn.style.display = 'block';
+                checkoutBtn.style.display = 'flex'; // Use flex for button icon alignment
+                clearCartBtn.style.display = 'flex';
             }
-            
-            cartCount.textContent = cart.length;
-            
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartTotal.textContent = `Jami: ${totalItems} ta tovar`;
+
+            cartCount.textContent = `${cart.length} tur (${totalCartItemCount} dona)`; // Show both types and total items
+            cartTotal.innerHTML = `Jami summa: <strong>${formatPrice(totalCartPrice)} so'm</strong>`;
         }
 
-        // --- YUKORIDA BERILGAN YANGILANGAN CHECKOUT FUNKSIYASI ---
+
+        // --- Buyurtmani yuborish (o'zgarishsiz, faqat timestamp qo'shilgan) ---
         async function checkout() {
             if (cart.length === 0) {
-                showAlert('❌ Savat bo\'sh!', 'error');
+                showAlert('🛒 Savat bo\'sh! Buyurtma berish uchun tovar qo\'shing.', 'warning'); // Change to warning
                 return;
             }
 
-            const customer = customerInput.value.trim() || 'No\'malum';
-            
+            // Asosiy webhookga faqat barcode va quantity kerak
+            const itemsToSend = cart.map(item => ({
+                barcode: item.barcode,
+                quantity: item.quantity
+            }));
+
+            const customer = customerInput.value.trim() || 'Noma\'lum';
+
             loading.classList.add('show');
             checkoutBtn.disabled = true;
+            clearCartBtn.disabled = true;
 
             try {
-                const response = await fetch(WEBHOOK_URL, {
+                console.log("Asosiy webhookga yuborilmoqda:", MAIN_WEBHOOK_URL);
+                console.log("Yuborilayotgan ma'lumot:", JSON.stringify({ customer: customer, items: itemsToSend, timestamp: new Date().toISOString() }));
+
+                const response = await fetch(MAIN_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         customer: customer,
-                        items: cart, // Vergul bor
-                        // QO'SHILGAN QATOR:
-                        timestamp: new Date().toISOString() 
+                        items: itemsToSend,
+                        timestamp: new Date().toISOString()
                     })
                 });
 
-                if (response.ok) {
-                    showAlert('✅ Buyurtma muvaffaqiyatli yuborildi!', 'success');
+                 console.log(`Asosiy webhook javobi statusi: ${response.status}`);
+                 const responseBody = await response.text();
+                 console.log(`Asosiy webhook javobi: ${responseBody}`);
+
+                if (response.ok && responseBody.toLowerCase() === 'accepted') { // Make.com often returns "Accepted"
+                    showAlert('✅ Buyurtma muvaffaqiyatli qabul qilindi!', 'success');
                     cart = [];
                     customerInput.value = '';
                     updateCartDisplay();
                 } else {
-                    showAlert('❌ Xatolik yuz berdi! Qayta urinib ko\'ring.', 'error');
+                     let errorMsg = `❌ Server xatosi (${response.status})! Qayta urinib ko'ring.`;
+                     if(responseBody && responseBody.toLowerCase() !== 'accepted') {
+                         errorMsg += ` Javob: ${responseBody}`;
+                     }
+                    showAlert(errorMsg, 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring.', 'error');
+                console.error('Checkout xatosi:', error);
+                showAlert('⚠️ Tarmoq xatosi! Internetni tekshiring va qayta urinib ko\'ring.', 'error');
             } finally {
                 loading.classList.remove('show');
                 checkoutBtn.disabled = false;
-            }
-        }
-        // --- YANGILANGAN CHECKOUT FUNKSIYASI TUGADI ---
-
-        function playBeep() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-            } catch (e) {
-                console.log('Ovoz chiqmadi');
+                clearCartBtn.disabled = false;
             }
         }
 
-        function showAlert(message, type) {
-            alertBox.textContent = message;
-            alertBox.className = `alert alert-${type} show`;
-            setTimeout(() => { alertBox.classList.remove('show'); }, 4000);
-        }
+        // --- Yordamchi funksiyalar ---
+        function playBeep(isError = false) { // Add error sound option
+             try {
+                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                 if (!audioContext) return; // Exit if audio context not supported
+                 const oscillator = audioContext.createOscillator();
+                 const gainNode = audioContext.createGain();
+                 oscillator.connect(gainNode);
+                 gainNode.connect(audioContext.destination);
 
-        window.addEventListener('beforeunload', () => {
-            if (isScanning) stopScanner();
+                 oscillator.frequency.value = isError ? 440 : 880; // Lower pitch for error
+                 oscillator.type = isError ? 'square' : 'sine'; // Harsher sound for error
+                 gainNode.gain.setValueAtTime(0.2, audioContext.currentTime); // Lower volume
+                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (isError ? 0.2 : 0.1)); // Longer duration for error
+
+                 oscillator.start(audioContext.currentTime);
+                 oscillator.stop(audioContext.currentTime + (isError ? 0.2 : 0.1));
+             } catch (e) { console.log('Ovoz chiqmadi', e); }
+         }
+
+        let alertTimeoutId = null; // Store timeout ID for alerts
+        function showAlert(message, type = 'info') {
+             alertBox.textContent = message;
+             alertBox.className = `alert alert-${type} show`;
+             // Clear previous timeout if exists
+             if (alertTimeoutId) clearTimeout(alertTimeoutId);
+             // Set new timeout
+             alertTimeoutId = setTimeout(() => {
+                  alertBox.classList.remove('show');
+                  alertTimeoutId = null;
+             }, 4000); // 4 seconds
+         }
+
+
+        // --- Dastlabki sozlamalar ---
+        window.addEventListener('beforeunload', (event) => {
+            // Ask for confirmation only if cart is not empty
+            if (cart.length > 0) {
+                 event.preventDefault(); // Standard practice
+                 event.returnValue = ''; // For older browsers
+            }
+             // Ensure scanner stops if active
+            if (isScanning) {
+                stopScanner();
+            }
         });
 
+
+        // Global funksiyalarni ochish (HTML dagi onclick uchun)
         window.removeFromCart = removeFromCart;
         window.updateQuantity = updateQuantity;
+
+        // Sahifa yuklanganda savatni ko'rsatish
+        updateCartDisplay();
+        console.log("Ilova yuklandi. Asosiy Webhook:", MAIN_WEBHOOK_URL);
+        console.log("Narx API Webhook:", API_WEBHOOK_URL);
+
+        // Check if API URL is set on load
+         if (!API_WEBHOOK_URL || API_WEBHOOK_URL.includes('YANGI_NARX_API')) {
+            showAlert("DIQQAT: Narx olish uchun API manzili sozlanmagan!", 'warning');
+         }
+
     </script>
 </body>
 </html>
